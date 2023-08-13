@@ -73,3 +73,14 @@ services:
     ports:
       - 16686:16686
       - 4318:4318
+  worker:
+    image: opencti/worker:5.7.1
+    environment:
+      - OPENCTI_URL=http://shmoks-MacBook-Pro.local:4000
+      - OPENCTI_TOKEN=77af4679-5c82-4828-bd70-87b5222aad5a
+      - WORKER_LOG_LEVEL=info
+    network_mode: host
+    deploy:
+      mode: replicated
+      replicas: 1
+    restart: always

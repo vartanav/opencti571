@@ -4,7 +4,9 @@
     <command value="start" />
     <node-interpreter value="project" />
     <package-manager value="yarn" />
-    <envs />
+    <envs>
+      <env name="NODE_ENV" value="dev" />
+    </envs>
     <method v="2" />
   </configuration>
 </component>
