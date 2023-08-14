@@ -2,7 +2,7 @@
   "app": {
     "port": 4000,
     "base_path": "",
-    "base_url": "http://localhost:4000/",
+    "base_url": "192.168.68.65:4000",
     "enabled": true,
     "https_cert": {
       "ca": [],
@@ -125,7 +125,7 @@
   "redis": {
     "mode": "single",
     "namespace": "",
-    "hostname": "localhost",
+    "hostname": "192.168.68.65",
     "use_ssl": false,
     "ca": [],
     "port": 6379,
@@ -133,7 +133,7 @@
   },
   "elasticsearch": {
     "index_prefix": "opencti",
-    "url": "http://localhost:9200",
+    "url": "http://192.168.68.65:9200",
     "index_creation_pattern": "-000001",
     "search_ignore_throttled": false,
     "max_pagination_result": 5000,
@@ -142,7 +142,7 @@
   "minio": {
     "bucket_name": "opencti-bucket",
     "bucket_region": "us-east-1",
-    "endpoint": "localhost",
+    "endpoint": "192.168.68.65",
     "port": 9000,
     "use_ssl": false,
     "access_key": "ChangeMe",
@@ -152,7 +152,7 @@
   },
   "rabbitmq": {
     "queue_prefix": "",
-    "hostname": "localhost",
+    "hostname": "192.168.68.65",
     "vhost": "/",
     "use_ssl": false,
     "use_ssl_ca": [],
@@ -164,7 +164,7 @@
     "queue_type": "classic"
   },
   "smtp": {
-    "hostname": "localhost",
+    "hostname": "192.168.68.65",
     "use_ssl": false,
     "reject_unauthorized": false,
     "port": 25,
