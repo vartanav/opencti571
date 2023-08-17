@@ -12,10 +12,11 @@ import {
   DeleteOutlined,
   EditOutlined,
   FilterListOutlined,
+  GroupWork,
   LinkOutlined,
   ReadMoreOutlined,
   ScatterPlotOutlined,
-  VisibilityOutlined,
+  VisibilityOutlined, Workspaces,
 } from '@mui/icons-material';
 import {
   AutoFix,
@@ -60,7 +61,7 @@ import { dateFormat } from '../../../../utils/Time';
 import { truncate } from '../../../../utils/String';
 import StixCoreRelationshipEdition from '../../common/stix_core_relationships/StixCoreRelationshipEdition';
 import StixDomainObjectEdition from '../../common/stix_domain_objects/StixDomainObjectEdition';
-import { parseDomain } from '../../../../utils/Graph';
+import {  parseDomain } from '../../../../utils/Graph';
 import StixSightingRelationshipCreation from '../../events/stix_sighting_relationships/StixSightingRelationshipCreation';
 import StixSightingRelationshipEdition from '../../events/stix_sighting_relationships/StixSightingRelationshipEdition';
 import SearchInput from '../../../../components/SearchInput';
@@ -347,6 +348,9 @@ class ReportKnowledgeGraphBar extends Component {
       timeRangeValues,
       theme,
       navOpen,
+      isGroupingEnabled,
+      isUnGroupingEnabled,
+      groupSelectedNodes,
     } = this.props;
     const {
       openStixCoreObjectsTypes,
@@ -423,6 +427,8 @@ class ReportKnowledgeGraphBar extends Component {
         ? [selectedLinks[0]]
         : [selectedNodes[0]];
     }
+    const groupingEnabled = isGroupingEnabled(selectedNodes);
+    const unGroupingEnabled = isUnGroupingEnabled(selectedNodes);
     return (
       <Drawer
         anchor="bottom"
@@ -813,6 +819,33 @@ class ReportKnowledgeGraphBar extends Component {
                 />
               </div>
             </div>
+              <Divider className={classes.divider} orientation="vertical"/>
+              <Tooltip title={t('Group')}>
+                    <span>
+                      <IconButton
+                          color="primary"
+                          onClick={(e)=>groupSelectedNodes(selectedNodes)}
+                          disabled={!groupingEnabled}
+                          size="large"
+                      >
+                        <GroupWork/>
+                      </IconButton>
+                    </span>
+              </Tooltip>
+              <Tooltip title={t('Ungroup')}>
+                    <span>
+                      <IconButton
+                          color="primary"
+                          onClick={() => {
+                            console.log('Ungrouping');
+                          }}
+                          disabled={!unGroupingEnabled}
+                          size="large"
+                      >
+                        <Workspaces/>
+                      </IconButton>
+                    </span>
+              </Tooltip>
             {report && (
               <div style={{ float: 'right', display: 'flex', height: '100%' }}>
                 {onAdd && (
@@ -1163,6 +1196,9 @@ ReportKnowledgeGraphBar.propTypes = {
   timeRangeValues: PropTypes.array,
   theme: PropTypes.object,
   navOpen: PropTypes.bool,
+  isGroupingEnabled: PropTypes.func,
+  isUnGroupingEnabled: PropTypes.func,
+  groupSelectedNodes: PropTypes.func,
 };
 
 export default R.compose(

@@ -10,6 +10,7 @@ import ForceGraph3D from 'react-force-graph-3d';
 import withTheme from '@mui/styles/withTheme';
 import { withRouter } from 'react-router-dom';
 import RectangleSelection from 'react-rectangle-selection';
+import groupOfNodes from 'pdfmake/src/styleContextStack';
 import inject18n from '../../../../components/i18n';
 import {
   commitMutation,
@@ -22,7 +23,7 @@ import {
   computeTimeRangeInterval,
   computeTimeRangeValues,
   decodeGraphData,
-  encodeGraphData,
+  encodeGraphData, groupSelectedNodes,
   linkPaint,
   nodeAreaPaint,
   nodePaint,
@@ -609,6 +610,29 @@ class ReportKnowledgeGraphComponent extends Component {
     }
   }
 
+  saveGrouping() {
+    const withGroups = this.graphData.nodes.filter((n) => n.group)
+      .map((n) => (
+        {
+          [n.id]: {
+            id: n.id,
+            group: n.group,
+          },
+        }
+      ));
+
+    commitMutation({
+      mutation: reportMutationFieldPatch,
+      variables: {
+        id: this.props.report.id,
+        input: {
+          key: 'x_opencti_graph_data',
+          value: encodeGraphData(withGroups),
+        },
+      },
+    });
+  }
+
   savePositions() {
     const initialPositions = R.indexBy(
       R.prop('id'),
@@ -618,7 +642,10 @@ class ReportKnowledgeGraphComponent extends Component {
       R.prop('id'),
       R.map((n) => ({ id: n.id, x: n.fx, y: n.fy }), this.state.graphData.nodes),
     );
+
+    console.log({ newPositions, initialPositions });
     const positions = R.mergeLeft(newPositions, initialPositions);
+    console.log('positions', positions);
     commitMutation({
       mutation: reportMutationFieldPatch,
       variables: {
@@ -1304,6 +1331,15 @@ class ReportKnowledgeGraphComponent extends Component {
             && this.areSameRelationShipTypes(selectedNodeIds);
   }
 
+  isUnGroupingEnabled(selectedNodes) {
+    return !!selectedNodes.length;
+  }
+
+  handleGroupSelectedNodes(selectedNodes) {
+    const { nodes, links } = groupSelectedNodes(selectedNodes, this.graphData, this.graphObjects);
+    this.saveGrouping();
+  }
+
   render() {
     const { report, theme, mode } = this.props;
     const {
@@ -1399,6 +1435,8 @@ class ReportKnowledgeGraphComponent extends Component {
                     handleSearch={this.handleSearch.bind(this)}
                     navOpen={navOpen}
                     isGroupingEnabled={this.isGroupingEnabled.bind(this)}
+                    isUnGroupingEnabled={this.isUnGroupingEnabled.bind(this)}
+                    groupSelectedNodes={this.handleGroupSelectedNodes.bind(this)}
                 />
                 {selectedEntities.length > 0 && (
                     <EntitiesDetailsRightsBar

@@ -520,6 +520,37 @@ export const applyLinkFilters = (
   ),
 )(linksData);
 
+export const groupSelectedNodes = (selectedNodes, graphData, graphObjects) => {
+  console.log(graphObjects);
+  const {nodes, links} = graphData;
+  const xs = [];
+  const ys = [];
+  const groupOfNodeIds = [];
+  // don't know which one is the best  graphData or graphObjects
+  for (let i = 0; i < nodes.length; i++) {
+    if (selectedNodes.find((n) => n.id === nodes[i].id)) {
+      xs.push(nodes[i].x);
+      ys.push(nodes[i].y);
+      groupOfNodeIds.push(nodes[i].id);
+    }
+  }
+  const xsAvarage = R.pipe(R.reduce(R.add, 0), R.divide(R.__, xs.length))(xs);
+  const ysAvarage = R.pipe(R.reduce(R.add, 0), R.divide(R.__, ys.length))(ys);
+  for (let i = 0; i < nodes.length; i++) {
+    if (groupOfNodeIds.includes(nodes[i].id)) {
+      nodes[i].group = {
+        groupName: `Multiple ${nodes[i].entity_type} ...`,
+        x: xsAvarage,
+        y: ysAvarage,
+      };
+    }
+  }
+  return {
+    nodes,
+    links,
+  };
+}
+
 export const applyFilters = (
   graphData,
   stixCoreObjectsTypes = [],
