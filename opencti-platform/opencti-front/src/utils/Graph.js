@@ -521,8 +521,7 @@ export const applyLinkFilters = (
 )(linksData);
 
 export const groupSelectedNodes = (selectedNodes, graphData, graphObjects) => {
-  console.log(graphObjects);
-  const {nodes, links} = graphData;
+  const { nodes, links } = graphData;
   const xs = [];
   const ys = [];
   const groupOfNodeIds = [];
@@ -536,20 +535,22 @@ export const groupSelectedNodes = (selectedNodes, graphData, graphObjects) => {
   }
   const xsAvarage = R.pipe(R.reduce(R.add, 0), R.divide(R.__, xs.length))(xs);
   const ysAvarage = R.pipe(R.reduce(R.add, 0), R.divide(R.__, ys.length))(ys);
-  for (let i = 0; i < nodes.length; i++) {
-    if (groupOfNodeIds.includes(nodes[i].id)) {
-      nodes[i].group = {
-        groupName: `Multiple ${nodes[i].entity_type} ...`,
+
+  nodes.forEach((n) => {
+    if (groupOfNodeIds.includes(n.id)) {
+      n.group = {
+        groupName: `Multiple ${n.entity_type} ...`,
         x: xsAvarage,
         y: ysAvarage,
       };
     }
-  }
+  });
+
   return {
     nodes,
     links,
   };
-}
+};
 
 export const applyFilters = (
   graphData,

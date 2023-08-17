@@ -610,24 +610,22 @@ class ReportKnowledgeGraphComponent extends Component {
     }
   }
 
-  saveGrouping() {
-    const withGroups = this.graphData.nodes.filter((n) => n.group)
-      .map((n) => (
-        {
-          [n.id]: {
-            id: n.id,
-            group: n.group,
-          },
-        }
-      ));
-
+  saveGrouping(nodes) {
     commitMutation({
       mutation: reportMutationFieldPatch,
       variables: {
         id: this.props.report.id,
         input: {
           key: 'x_opencti_graph_data',
-          value: encodeGraphData(withGroups),
+          value: encodeGraphData(nodes.reduce((acc, n) => {
+            acc[n.id] = {
+              id: n.id,
+              x: n.x,
+              y: n.y,
+              ...(n.group ? { group: n.group } : {}),
+            };
+            return acc;
+          }, {})),
         },
       },
     });
@@ -1337,7 +1335,8 @@ class ReportKnowledgeGraphComponent extends Component {
 
   handleGroupSelectedNodes(selectedNodes) {
     const { nodes, links } = groupSelectedNodes(selectedNodes, this.graphData, this.graphObjects);
-    this.saveGrouping();
+    console.log(nodes);
+    this.saveGrouping(nodes);
   }
 
   render() {
