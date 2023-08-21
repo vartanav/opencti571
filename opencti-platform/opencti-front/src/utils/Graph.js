@@ -359,61 +359,61 @@ export const defaultValue = (n, tooltip = false) => {
   if (tooltip) {
     return `${n.x_mitre_id ? `[${n.x_mitre_id}] ` : ''}${
       n.name
-      || n.label
-      || n.observable_value
-      || n.attribute_abstract
-      || n.opinion
-      || n.value
-      || n.definition
-      || n.source_name
-      || n.phase_name
-      || (n.content && truncate(n.content, 30))
-      || (n.hashes
-        && (n.hashes.MD5 || n.hashes['SHA-1'] || n.hashes['SHA-256']))
-      || (n.source_ref_name
-        && n.target_ref_name
-        && `${truncate(n.source_ref_name, 20)} ➡️ ${truncate(
-          n.target_ref_name,
-          20,
-        )}`)
-      || n.id
-      || defaultValue(R.head(R.pathOr([], ['objects', 'edges'], n))?.node)
-      || (n.from
-        && n.to
-        && `${truncate(defaultValue(n.from), 20)} ➡️ ${truncate(
-          defaultValue(n.to),
-          20,
-        )}`)
-      || 'Unknown'
+            || n.label
+            || n.observable_value
+            || n.attribute_abstract
+            || n.opinion
+            || n.value
+            || n.definition
+            || n.source_name
+            || n.phase_name
+            || (n.content && truncate(n.content, 30))
+            || (n.hashes
+                && (n.hashes.MD5 || n.hashes['SHA-1'] || n.hashes['SHA-256']))
+            || (n.source_ref_name
+                && n.target_ref_name
+                && `${truncate(n.source_ref_name, 20)} ➡️ ${truncate(
+                  n.target_ref_name,
+                  20,
+                )}`)
+            || n.id
+            || defaultValue(R.head(R.pathOr([], ['objects', 'edges'], n))?.node)
+            || (n.from
+                && n.to
+                && `${truncate(defaultValue(n.from), 20)} ➡️ ${truncate(
+                  defaultValue(n.to),
+                  20,
+                )}`)
+            || 'Unknown'
     }`;
   }
   return `${n.x_mitre_id ? `[${n.x_mitre_id}] ` : ''}${
     n.name
-    || n.label
-    || n.observableName
-    || n.observable_value
-    || n.attribute_abstract
-    || n.opinion
-    || n.value
-    || n.definition
-    || n.source_name
-    || n.phase_name
-    || (n.content && truncate(n.content, 30))
-    || (n.hashes && (n.hashes.MD5 || n.hashes['SHA-1'] || n.hashes['SHA-256']))
-    || (n.source_ref_name
-      && n.target_ref_name
-      && `${truncate(n.source_ref_name, 20)} ➡️ ${truncate(
-        n.target_ref_name,
-        20,
-      )}`)
-    || defaultValue(R.head(R.pathOr([], ['objects', 'edges'], n))?.node)
-    || (n.from
-      && n.to
-      && `${truncate(defaultValue(n.from), 20)} ➡️ ${truncate(
-        defaultValue(n.to),
-        20,
-      )}`)
-    || 'Unknown'
+        || n.label
+        || n.observableName
+        || n.observable_value
+        || n.attribute_abstract
+        || n.opinion
+        || n.value
+        || n.definition
+        || n.source_name
+        || n.phase_name
+        || (n.content && truncate(n.content, 30))
+        || (n.hashes && (n.hashes.MD5 || n.hashes['SHA-1'] || n.hashes['SHA-256']))
+        || (n.source_ref_name
+            && n.target_ref_name
+            && `${truncate(n.source_ref_name, 20)} ➡️ ${truncate(
+              n.target_ref_name,
+              20,
+            )}`)
+        || defaultValue(R.head(R.pathOr([], ['objects', 'edges'], n))?.node)
+        || (n.from
+            && n.to
+            && `${truncate(defaultValue(n.from), 20)} ➡️ ${truncate(
+              defaultValue(n.to),
+              20,
+            )}`)
+        || 'Unknown'
   }`;
 };
 
@@ -421,10 +421,10 @@ export const defaultSecondaryValue = (n) => {
   if (!n) return '';
   return (
     n.description
-    || n.x_opencti_description
-    || n.content
-    || n.entity_type
-    || dateFormat(n.created_at)
+        || n.x_opencti_description
+        || n.content
+        || n.entity_type
+        || dateFormat(n.created_at)
   );
 };
 
@@ -485,12 +485,12 @@ export const applyNodeFilters = (
   keyword = '',
 ) => {
   const filterByKeyword = (n) => keyword === ''
-    || (defaultValue(n) || '').toLowerCase().indexOf(keyword.toLowerCase())
-      !== -1
-    || (defaultSecondaryValue(n) || '')
-      .toLowerCase()
-      .indexOf(keyword.toLowerCase()) !== -1
-    || (n.entity_type || '').toLowerCase().indexOf(keyword.toLowerCase()) !== -1;
+        || (defaultValue(n) || '').toLowerCase().indexOf(keyword.toLowerCase())
+        !== -1
+        || (defaultSecondaryValue(n) || '')
+          .toLowerCase()
+          .indexOf(keyword.toLowerCase()) !== -1
+        || (n.entity_type || '').toLowerCase().indexOf(keyword.toLowerCase()) !== -1;
   return R.pipe(
     R.filter((n) => !R.includes(n.entity_type, excludedStixCoreObjectsTypes)),
     R.filter((n) => R.includes(n.entity_type, stixCoreObjectsTypes)),
@@ -498,8 +498,8 @@ export const applyNodeFilters = (
     R.filter((n) => R.includes(n.createdBy.id, createdBy)),
     R.filter(
       (n) => interval.length === 0
-        || isNone(n.defaultDate)
-        || (n.defaultDate >= interval[0] && n.defaultDate <= interval[1]),
+                || isNone(n.defaultDate)
+                || (n.defaultDate >= interval[0] && n.defaultDate <= interval[1]),
     ),
     R.filter(filterByKeyword),
   )(nodesData);
@@ -515,8 +515,8 @@ export const applyLinkFilters = (
   R.filter((n) => R.includes(n.createdBy.id, createdBy)),
   R.filter(
     (n) => interval.length === 0
-        || isNone(n.defaultDate)
-        || (n.defaultDate >= interval[0] && n.defaultDate <= interval[1]),
+            || isNone(n.defaultDate)
+            || (n.defaultDate >= interval[0] && n.defaultDate <= interval[1]),
   ),
 )(linksData);
 
@@ -535,11 +535,13 @@ export const groupSelectedNodes = (selectedNodes, graphData, graphObjects) => {
   }
   const xsAvarage = R.pipe(R.reduce(R.add, 0), R.divide(R.__, xs.length))(xs);
   const ysAvarage = R.pipe(R.reduce(R.add, 0), R.divide(R.__, ys.length))(ys);
+  // generate uuid
+  const groupUid = new Date().toISOString();
 
   nodes.forEach((n) => {
     if (groupOfNodeIds.includes(n.id)) {
       n.group = {
-        groupName: `Multiple ${n.entity_type} ...`,
+        groupName: `Multiple ${n.entity_type} ... (${groupUid})`,
         x: xsAvarage,
         y: ysAvarage,
       };
@@ -587,6 +589,25 @@ export const applyFilters = (
     links,
   };
 };
+
+function handleVisualGroups(objects, graphData) {
+  const grouped = {};
+  const newObjects = [];
+  for (const o of objects) {
+    if (graphData[o.id]?.group?.groupName) {
+      grouped[graphData[o.id].group.groupName] = {
+        ...o,
+        id: o.id,
+        x: graphData[o.id].group.groupName.x,
+        y: graphData[o.id].group.groupName.y,
+        name: graphData[o.id].group.groupName,
+      };
+    } else {
+      newObjects.push(o);
+    }
+  }
+  return newObjects.concat(Object.values(grouped));
+}
 
 export const buildCorrelationData = (
   originalObjects,
@@ -702,10 +723,10 @@ export const buildCorrelationData = (
       }),
       R.filter(
         (m) => m
-            && R.includes(
-              m.id,
-              R.map((o) => o.node.id, n.reports.edges),
-            ),
+                    && R.includes(
+                      m.id,
+                      R.map((o) => o.node.id, n.reports.edges),
+                    ),
       )(relatedReportNodes),
     )),
     R.flatten,
@@ -853,10 +874,10 @@ export const buildCaseCorrelationData = (
       }),
       R.filter(
         (m) => m
-            && R.includes(
-              m.id,
-              R.map((o) => o.node.id, n.cases.edges),
-            ),
+                    && R.includes(
+                      m.id,
+                      R.map((o) => o.node.id, n.cases.edges),
+                    ),
       )(relatedCaseNodes),
     )),
     R.flatten,
@@ -890,7 +911,8 @@ export const buildCaseCorrelationData = (
   };
 };
 
-export const buildGraphData = (objects, graphData, t) => {
+export const buildGraphData = (objectsBeforeGrouping, graphData, t) => {
+  const objects = handleVisualGroups(objectsBeforeGrouping, graphData);
   const relationshipsIdsInNestedRelationship = R.pipe(
     R.filter(
       (n) => n.from && n.to && (n.from.relationship_type || n.to.relationship_type),
@@ -900,7 +922,7 @@ export const buildGraphData = (objects, graphData, t) => {
   const nodes = R.pipe(
     R.filter(
       (n) => !n.parent_types.includes('basic-relationship')
-        || R.includes(n.id, relationshipsIdsInNestedRelationship),
+                || R.includes(n.id, relationshipsIdsInNestedRelationship),
     ),
     R.map((n) => R.assoc('number_keys', R.keys(n).length, n)),
     R.sortWith([R.descend(R.prop('number_keys'))]),
@@ -908,11 +930,11 @@ export const buildGraphData = (objects, graphData, t) => {
     R.map((n) => ({
       id: n.id,
       val:
-        graphLevel[
-          n.parent_types.includes('basic-relationship')
-            ? 'relationship'
-            : n.entity_type
-        ] || graphLevel.Unknown,
+                graphLevel[
+                  n.parent_types.includes('basic-relationship')
+                    ? 'relationship'
+                    : n.entity_type
+                ] || graphLevel.Unknown,
       name: `${
         n.relationship_type
           ? `<strong>${t(`relationship_${n.relationship_type}`)}</strong>\n${t(
@@ -936,17 +958,17 @@ export const buildGraphData = (objects, graphData, t) => {
           n.entity_type === 'Attack-Pattern' ? 30 : 20,
         ),
       img:
-        graphImages[
-          n.parent_types.includes('basic-relationship')
-            ? 'relationship'
-            : n.entity_type
-        ] || graphImages.Unknown,
+                graphImages[
+                  n.parent_types.includes('basic-relationship')
+                    ? 'relationship'
+                    : n.entity_type
+                ] || graphImages.Unknown,
       rawImg:
-        graphRawImages[
-          n.parent_types.includes('basic-relationship')
-            ? 'relationship'
-            : n.entity_type
-        ] || graphRawImages.Unknown,
+                graphRawImages[
+                  n.parent_types.includes('basic-relationship')
+                    ? 'relationship'
+                    : n.entity_type
+                ] || graphRawImages.Unknown,
       color: n.x_opencti_color || n.color || itemColor(n.entity_type, false),
       parent_types: n.parent_types,
       entity_type: n.entity_type,
@@ -957,24 +979,24 @@ export const buildGraphData = (objects, graphData, t) => {
       toType: n.to?.entity_type,
       isObservable: !!n.observable_value,
       isNestedInferred:
-        (n.types?.includes('inferred') && !n.types.includes('manual')) || false,
+                (n.types?.includes('inferred') && !n.types.includes('manual')) || false,
       markedBy:
-        !R.isNil(n.objectMarking) && !R.isEmpty(n.objectMarking.edges)
-          ? R.map(
-            (m) => ({ id: m.node.id, definition: m.node.definition }),
-            n.objectMarking.edges,
-          )
-          : [
-            {
-              id: 'abb8eb18-a02c-48e9-adae-08c92275c87e',
-              definition: t('None'),
-              definition_type: t('None'),
-            },
-          ],
+                !R.isNil(n.objectMarking) && !R.isEmpty(n.objectMarking.edges)
+                  ? R.map(
+                    (m) => ({ id: m.node.id, definition: m.node.definition }),
+                    n.objectMarking.edges,
+                  )
+                  : [
+                    {
+                      id: 'abb8eb18-a02c-48e9-adae-08c92275c87e',
+                      definition: t('None'),
+                      definition_type: t('None'),
+                    },
+                  ],
       createdBy:
-        !R.isNil(n.createdBy) && !R.isEmpty(n.createdBy)
-          ? n.createdBy
-          : { id: '0533fcc9-b9e8-4010-877c-174343cb24cd', name: t('None') },
+                !R.isNil(n.createdBy) && !R.isEmpty(n.createdBy)
+                  ? n.createdBy
+                  : { id: '0533fcc9-b9e8-4010-877c-174343cb24cd', name: t('None') },
       fx: graphData[n.id] && graphData[n.id].x ? graphData[n.id].x : null,
       fy: graphData[n.id] && graphData[n.id].y ? graphData[n.id].y : null,
     })),
@@ -982,9 +1004,9 @@ export const buildGraphData = (objects, graphData, t) => {
   const normalLinks = R.pipe(
     R.filter(
       (n) => n.parent_types.includes('basic-relationship')
-        && !R.includes(n.id, relationshipsIdsInNestedRelationship)
-        && n.from
-        && n.to,
+                && !R.includes(n.id, relationshipsIdsInNestedRelationship)
+                && n.from
+                && n.to,
     ),
     R.uniqBy(R.prop('id')),
     R.map((n) => ({
@@ -1010,25 +1032,25 @@ export const buildGraphData = (objects, graphData, t) => {
       target_id: n.to.id,
       inferred: n.is_inferred,
       isNestedInferred:
-        (n.types?.includes('inferred') && !n.types.includes('manual')) || false,
+                (n.types?.includes('inferred') && !n.types.includes('manual')) || false,
       defaultDate: jsDate(defaultDate(n)),
       markedBy:
-        !R.isNil(n.objectMarking) && !R.isEmpty(n.objectMarking.edges)
-          ? R.map(
-            (m) => ({ id: m.node.id, definition: m.node.definition }),
-            n.objectMarking.edges,
-          )
-          : [
-            {
-              id: 'abb8eb18-a02c-48e9-adae-08c92275c87e',
-              definition: t('None'),
-              definition_type: t('None'),
-            },
-          ],
+                !R.isNil(n.objectMarking) && !R.isEmpty(n.objectMarking.edges)
+                  ? R.map(
+                    (m) => ({ id: m.node.id, definition: m.node.definition }),
+                    n.objectMarking.edges,
+                  )
+                  : [
+                    {
+                      id: 'abb8eb18-a02c-48e9-adae-08c92275c87e',
+                      definition: t('None'),
+                      definition_type: t('None'),
+                    },
+                  ],
       createdBy:
-        !R.isNil(n.createdBy) && !R.isEmpty(n.createdBy)
-          ? n.createdBy
-          : { id: '0533fcc9-b9e8-4010-877c-174343cb24cd', name: t('None') },
+                !R.isNil(n.createdBy) && !R.isEmpty(n.createdBy)
+                  ? n.createdBy
+                  : { id: '0533fcc9-b9e8-4010-877c-174343cb24cd', name: t('None') },
       datable: n.datable,
     })),
   )(objects);
@@ -1052,22 +1074,22 @@ export const buildGraphData = (objects, graphData, t) => {
         stop_time: '',
         defaultDate: jsDate(defaultDate(n)),
         markedBy:
-          !R.isNil(n.objectMarking) && !R.isEmpty(n.objectMarking.edges)
-            ? R.map(
-              (m) => ({ id: m.node.id, definition: m.node.definition }),
-              n.objectMarking.edges,
-            )
-            : [
-              {
-                id: 'abb8eb18-a02c-48e9-adae-08c92275c87e',
-                definition: t('None'),
-                definition_type: t('None'),
-              },
-            ],
+                    !R.isNil(n.objectMarking) && !R.isEmpty(n.objectMarking.edges)
+                      ? R.map(
+                        (m) => ({ id: m.node.id, definition: m.node.definition }),
+                        n.objectMarking.edges,
+                      )
+                      : [
+                        {
+                          id: 'abb8eb18-a02c-48e9-adae-08c92275c87e',
+                          definition: t('None'),
+                          definition_type: t('None'),
+                        },
+                      ],
         createdBy:
-          !R.isNil(n.createdBy) && !R.isEmpty(n.createdBy)
-            ? n.createdBy
-            : { id: '0533fcc9-b9e8-4010-877c-174343cb24cd', name: t('None') },
+                    !R.isNil(n.createdBy) && !R.isEmpty(n.createdBy)
+                      ? n.createdBy
+                      : { id: '0533fcc9-b9e8-4010-877c-174343cb24cd', name: t('None') },
       },
       {
         id: n.id,
@@ -1075,8 +1097,8 @@ export const buildGraphData = (objects, graphData, t) => {
         entity_type: n.entity_type,
         relationship_type: n.relationship_type,
         isNestedInferred:
-          (n.types?.includes('inferred') && !n.types.includes('manual'))
-          || false,
+                    (n.types?.includes('inferred') && !n.types.includes('manual'))
+                    || false,
         source: n.id,
         target: n.to.id,
         label: '',
@@ -1087,22 +1109,22 @@ export const buildGraphData = (objects, graphData, t) => {
         stop_time: '',
         defaultDate: jsDate(defaultDate(n)),
         markedBy:
-          !R.isNil(n.objectMarking) && !R.isEmpty(n.objectMarking.edges)
-            ? R.map(
-              (m) => ({ id: m.node.id, definition: m.node.definition }),
-              n.objectMarking.edges,
-            )
-            : [
-              {
-                id: 'abb8eb18-a02c-48e9-adae-08c92275c87e',
-                definition: t('None'),
-                definition_type: t('None'),
-              },
-            ],
+                    !R.isNil(n.objectMarking) && !R.isEmpty(n.objectMarking.edges)
+                      ? R.map(
+                        (m) => ({ id: m.node.id, definition: m.node.definition }),
+                        n.objectMarking.edges,
+                      )
+                      : [
+                        {
+                          id: 'abb8eb18-a02c-48e9-adae-08c92275c87e',
+                          definition: t('None'),
+                          definition_type: t('None'),
+                        },
+                      ],
         createdBy:
-          !R.isNil(n.createdBy) && !R.isEmpty(n.createdBy)
-            ? n.createdBy
-            : { id: '0533fcc9-b9e8-4010-877c-174343cb24cd', name: t('None') },
+                    !R.isNil(n.createdBy) && !R.isEmpty(n.createdBy)
+                      ? n.createdBy
+                      : { id: '0533fcc9-b9e8-4010-877c-174343cb24cd', name: t('None') },
       },
     ]),
     R.flatten,

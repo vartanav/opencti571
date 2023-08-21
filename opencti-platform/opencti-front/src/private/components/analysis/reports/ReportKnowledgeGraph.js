@@ -1330,13 +1330,13 @@ class ReportKnowledgeGraphComponent extends Component {
   }
 
   isUnGroupingEnabled(selectedNodes) {
-    return !!selectedNodes.length;
+    return selectedNodes.length === 1 && /^Multiple\s.*\n\d+\-\d+\-\d+$/.test(selectedNodes[0].name);
   }
 
   handleGroupSelectedNodes(selectedNodes) {
     const { nodes, links } = groupSelectedNodes(selectedNodes, this.graphData, this.graphObjects);
-    console.log(nodes);
     this.saveGrouping(nodes);
+    this.forceUpdate();
   }
 
   render() {
