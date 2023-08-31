@@ -3129,54 +3129,7 @@ class WorkbenchFileContentComponent extends Component {
                         style={inlineStyles.in_platform}
                       >
                         {object.default_value
-                        && object.type !== 'marking-definition' ? (
-                          <QueryRenderer
-                            query={stixDomainObjectsLinesSearchQuery}
-                            variables={{
-                              types: [type],
-                              filters: [
-                                {
-                                  key: [
-                                    'name',
-                                    'aliases',
-                                    'x_opencti_aliases',
-                                    'x_mitre_id',
-                                  ],
-                                  values:
-                                    object.name
-                                    || object.value
-                                    || object.definition,
-                                },
-                              ],
-                              count: 1,
-                            }}
-                            render={({ props }) => {
-                              if (props && props.stixDomainObjects) {
-                                return props.stixDomainObjects.edges.length
-                                  > 0 ? (
-                                  <ItemBoolean
-                                    variant="inList"
-                                    status={true}
-                                    label={t('Yes')}
-                                  />
-                                  ) : (
-                                  <ItemBoolean
-                                    variant="inList"
-                                    status={false}
-                                    label={t('No')}
-                                  />
-                                  );
-                              }
-                              return (
-                                <ItemBoolean
-                                  variant="inList"
-                                  status={undefined}
-                                  label={t('Pending')}
-                                />
-                              );
-                            }}
-                          />
-                          ) : (
+                        && object.type !== 'marking-definition' && (
                           <ItemBoolean
                             variant="inList"
                             status={null}
@@ -3404,52 +3357,7 @@ class WorkbenchFileContentComponent extends Component {
                         style={inlineStyles.in_platform}
                       >
                         {object.default_value
-                        && object.type !== 'marking-definition' ? (
-                          <QueryRenderer
-                            query={stixCyberObservablesLinesSearchQuery}
-                            variables={{
-                              types: [type],
-                              filters: [
-                                {
-                                  key: [
-                                    'name',
-                                    'value',
-                                    'hashes_MD5',
-                                    'hashes_SHA1',
-                                    'hashes_SHA256',
-                                  ],
-                                  values: [object.default_value],
-                                },
-                              ],
-                              count: 1,
-                            }}
-                            render={({ props }) => {
-                              if (props && props.stixCyberObservables) {
-                                return props.stixCyberObservables.edges.length
-                                  > 0 ? (
-                                  <ItemBoolean
-                                    variant="inList"
-                                    status={true}
-                                    label={t('Yes')}
-                                  />
-                                  ) : (
-                                  <ItemBoolean
-                                    variant="inList"
-                                    status={false}
-                                    label={t('No')}
-                                  />
-                                  );
-                              }
-                              return (
-                                <ItemBoolean
-                                  variant="inList"
-                                  status={undefined}
-                                  label={t('Pending')}
-                                />
-                              );
-                            }}
-                          />
-                          ) : (
+                        && object.type !== 'marking-definition' && (
                           <ItemBoolean
                             variant="inList"
                             status={null}
@@ -3816,55 +3724,7 @@ class WorkbenchFileContentComponent extends Component {
                         style={inlineStyles.in_platform}
                       >
                         {object.default_value
-                        && object.type !== 'marking-definition' ? (
-                          <QueryRenderer
-                            query={stixDomainObjectsLinesSearchQuery}
-                            variables={{
-                              types: [type],
-                              filters: [
-                                {
-                                  key: [
-                                    'name',
-                                    'aliases',
-                                    'x_opencti_aliases',
-                                    'x_mitre_id',
-                                  ],
-                                  values:
-                                    object.name
-                                    || object.value
-                                    || object.definition
-                                    || 'Unknown',
-                                },
-                              ],
-                              count: 1,
-                            }}
-                            render={({ props }) => {
-                              if (props && props.stixDomainObjects) {
-                                return props.stixDomainObjects.edges.length
-                                  > 0 ? (
-                                  <ItemBoolean
-                                    variant="inList"
-                                    status={true}
-                                    label={t('Yes')}
-                                  />
-                                  ) : (
-                                  <ItemBoolean
-                                    variant="inList"
-                                    status={false}
-                                    label={t('No')}
-                                  />
-                                  );
-                              }
-                              return (
-                                <ItemBoolean
-                                  variant="inList"
-                                  status={undefined}
-                                  label={t('Pending')}
-                                />
-                              );
-                            }}
-                          />
-                          ) : (
+                        && object.type !== 'marking-definition' && (
                           <ItemBoolean
                             variant="inList"
                             status={null}

@@ -61,7 +61,7 @@ import { dateFormat } from '../../../../utils/Time';
 import { truncate } from '../../../../utils/String';
 import StixCoreRelationshipEdition from '../../common/stix_core_relationships/StixCoreRelationshipEdition';
 import StixDomainObjectEdition from '../../common/stix_domain_objects/StixDomainObjectEdition';
-import {  parseDomain } from '../../../../utils/Graph';
+import { parseDomain } from '../../../../utils/Graph';
 import StixSightingRelationshipCreation from '../../events/stix_sighting_relationships/StixSightingRelationshipCreation';
 import StixSightingRelationshipEdition from '../../events/stix_sighting_relationships/StixSightingRelationshipEdition';
 import SearchInput from '../../../../components/SearchInput';
@@ -69,6 +69,7 @@ import StixNestedRefRelationshipCreation from '../../common/stix_nested_ref_rela
 import StixNestedRefRelationshipEdition from '../../common/stix_nested_ref_relationships/StixNestedRefRelationshipEdition';
 import StixCyberObservableEdition from '../../observations/stix_cyber_observables/StixCyberObservableEdition';
 import { isStixNestedRefRelationship } from '../../../../utils/Relation';
+
 
 const styles = () => ({
   bottomNav: {
@@ -348,7 +349,6 @@ class ReportKnowledgeGraphBar extends Component {
       timeRangeValues,
       theme,
       navOpen,
-      isGroupingEnabled,
       isUnGroupingEnabled,
       groupSelectedNodes,
     } = this.props;
@@ -427,7 +427,7 @@ class ReportKnowledgeGraphBar extends Component {
         ? [selectedLinks[0]]
         : [selectedNodes[0]];
     }
-    const groupingEnabled = isGroupingEnabled(selectedNodes);
+    const groupingEnabled = !!selectedNodes.length
     const unGroupingEnabled = isUnGroupingEnabled(selectedNodes);
     return (
       <Drawer
@@ -824,7 +824,7 @@ class ReportKnowledgeGraphBar extends Component {
                     <span>
                       <IconButton
                           color="primary"
-                          onClick={(e)=>groupSelectedNodes(selectedNodes)}
+                          onClick={(e) => groupSelectedNodes(selectedNodes)}
                           disabled={!groupingEnabled}
                           size="large"
                       >
@@ -836,8 +836,8 @@ class ReportKnowledgeGraphBar extends Component {
                     <span>
                       <IconButton
                           color="primary"
-                          onClick={() => {
-                            console.log('Ungrouping');
+                          onClick={(e) => {
+                            console.log('Ungrouping not implemented yet');
                           }}
                           disabled={!unGroupingEnabled}
                           size="large"

@@ -10,7 +10,7 @@ import ForceGraph3D from 'react-force-graph-3d';
 import withTheme from '@mui/styles/withTheme';
 import { withRouter } from 'react-router-dom';
 import RectangleSelection from 'react-rectangle-selection';
-import groupOfNodes from 'pdfmake/src/styleContextStack';
+import { Chart } from 'regraph';
 import inject18n from '../../../../components/i18n';
 import {
   commitMutation,
@@ -24,10 +24,7 @@ import {
   computeTimeRangeValues,
   decodeGraphData,
   encodeGraphData, groupSelectedNodes,
-  linkPaint,
-  nodeAreaPaint,
-  nodePaint,
-  nodeThreePaint,
+  reGraphData,
 } from '../../../../utils/Graph';
 import {
   buildViewParamsFromUrlAndStorage,
@@ -44,7 +41,7 @@ import {
 import ContainerHeader from '../../common/containers/ContainerHeader';
 import ReportPopover from './ReportPopover';
 import EntitiesDetailsRightsBar from '../../../../utils/graph/EntitiesDetailsRightBar';
-import { hexToRGB } from '../../../../utils/Colors';
+import {Regraph} from "./Regraph";
 
 const ignoredStixCoreObjectsTypes = ['Report', 'Note', 'Opinion'];
 
@@ -446,6 +443,8 @@ class ReportKnowledgeGraphComponent extends Component {
     this.graph = React.createRef();
     this.selectedNodes = new Set();
     this.selectedLinks = new Set();
+    this.comboLookup = React.createRef({});
+    this.nextComboId = React.createRef(0);
     const params = buildViewParamsFromUrlAndStorage(
       props.history,
       props.location,
@@ -514,6 +513,7 @@ class ReportKnowledgeGraphComponent extends Component {
       createdBy,
       ignoredStixCoreObjectsTypes,
     );
+
     const timeRangeInterval = computeTimeRangeInterval(this.graphObjects);
     this.state = {
       mode3D: R.propOr(false, 'mode3D', params),
@@ -537,6 +537,7 @@ class ReportKnowledgeGraphComponent extends Component {
       graphData: graphWithFilters,
       numberOfSelectedNodes: 0,
       numberOfSelectedLinks: 0,
+      openCombos: {},
       width: null,
       height: null,
       zoomed: false,
@@ -631,6 +632,19 @@ class ReportKnowledgeGraphComponent extends Component {
     });
   }
 
+  saveRePositions(positions) {
+    commitMutation({
+      mutation: reportMutationFieldPatch,
+      variables: {
+        id: this.props.report.id,
+        input: {
+          key: 'x_opencti_graph_data',
+          value: encodeGraphData(positions),
+        },
+      },
+    });
+  }
+
   savePositions() {
     const initialPositions = R.indexBy(
       R.prop('id'),
@@ -641,9 +655,7 @@ class ReportKnowledgeGraphComponent extends Component {
       R.map((n) => ({ id: n.id, x: n.fx, y: n.fy }), this.state.graphData.nodes),
     );
 
-    console.log({ newPositions, initialPositions });
     const positions = R.mergeLeft(newPositions, initialPositions);
-    console.log('positions', positions);
     commitMutation({
       mutation: reportMutationFieldPatch,
       variables: {
@@ -855,6 +867,15 @@ class ReportKnowledgeGraphComponent extends Component {
       this.selectedLinks.clear();
       if (!untoggle) this.selectedNodes.add(node);
     }
+    this.setState({
+      numberOfSelectedNodes: this.selectedNodes.size,
+      numberOfSelectedLinks: this.selectedLinks.size,
+    });
+  }
+
+  handleReNodeClick(nodes) {
+    this.selectedNodes.clear();
+    Object.values(nodes).forEach((n) => this.selectedNodes.add(n));
     this.setState({
       numberOfSelectedNodes: this.selectedNodes.size,
       numberOfSelectedLinks: this.selectedLinks.size,
@@ -1315,32 +1336,38 @@ class ReportKnowledgeGraphComponent extends Component {
     });
   }
 
-  areSameRelationShipTypes(selectedNodeIds) {
-    const selectedNodesRelationships = this.graphData.links.filter(
-      (r) => (selectedNodeIds.includes(r.source_id) || selectedNodeIds.includes(r.target_id)),
-    );
-    return selectedNodesRelationships.every((r) => r.relationship_type === selectedNodesRelationships[0].relationship_type);
-  }
-
-  isGroupingEnabled(selectedNodes) {
-    if (selectedNodes.length <= 1) return false; // array
-    const selectedNodeIds = selectedNodes.map((n) => n.id); // important, don't trust ramda
-    return selectedNodes.every((n) => n.entity_type === selectedNodes[0].entity_type)
-            && this.areSameRelationShipTypes(selectedNodeIds);
-  }
-
-  isUnGroupingEnabled(selectedNodes) {
-    return selectedNodes.length === 1 && /^Multiple\s.*\n\d+\-\d+\-\d+$/.test(selectedNodes[0].name);
+  isUnGroupingEnabled() {
+    return this.selectedNodes.length > 1;
+    // implement if selectedNodes has group name
+    // or just use regraph combinedNodes ...
   }
 
   handleGroupSelectedNodes(selectedNodes) {
-    const { nodes, links } = groupSelectedNodes(selectedNodes, this.graphData, this.graphObjects);
-    this.saveGrouping(nodes);
-    this.forceUpdate();
+    console.log(selectedNodes);
+    this.setState({
+      graphData: groupSelectedNodes(selectedNodes, this.graphData, this.graphObjects),
+    });
+  }
+
+  handleUpdateGraphData(event) {
+    this.setState((prev) => ({
+      graphData: {
+        links: prev.graphData.links,
+        nodes: prev.graphData.nodes.map((n) => {
+          const position = event.positions[n.id];
+          if (!position) return n;
+          return {
+            ...n,
+            x: position.x,
+            y: position.y,
+          };
+        }),
+      },
+    }));
   }
 
   render() {
-    const { report, theme, mode } = this.props;
+    const { report, mode } = this.props;
     const {
       mode3D,
       modeFixed,
@@ -1370,6 +1397,8 @@ class ReportKnowledgeGraphComponent extends Component {
       timeRangeInterval,
       this.graphObjects,
     );
+
+    console.log(graphData);
 
     return (
             <div>
@@ -1433,7 +1462,6 @@ class ReportKnowledgeGraphComponent extends Component {
                     timeRangeValues={timeRangeValues}
                     handleSearch={this.handleSearch.bind(this)}
                     navOpen={navOpen}
-                    isGroupingEnabled={this.isGroupingEnabled.bind(this)}
                     isUnGroupingEnabled={this.isUnGroupingEnabled.bind(this)}
                     groupSelectedNodes={this.handleGroupSelectedNodes.bind(this)}
                 />
@@ -1443,218 +1471,14 @@ class ReportKnowledgeGraphComponent extends Component {
                         navOpen={navOpen}
                     />
                 )}
-                {mode3D ? (
-                    <ForceGraph3D
-                        ref={this.graph}
-                        width={graphWidth}
-                        height={graphHeight}
-                        backgroundColor={theme.palette.background.default}
-                        graphData={graphData}
-                        nodeThreeObjectExtend={true}
-                        nodeThreeObject={(node) => nodeThreePaint(node, theme.palette.text.primary)
-                        }
-                        linkColor={(link) => {
-                          // eslint-disable-next-line no-nested-ternary
-                          return this.selectedLinks.has(link)
-                            ? theme.palette.secondary.main
-                            : link.isNestedInferred
-                              ? theme.palette.warning.main
-                              : theme.palette.primary.main;
-                        }}
-                        linkLineDash={[2, 1]}
-                        linkWidth={0.2}
-                        linkDirectionalArrowLength={3}
-                        linkDirectionalArrowRelPos={0.99}
-                        linkThreeObjectExtend={true}
-                        linkThreeObject={(link) => {
-                          if (!displayLabels) return null;
-                          const sprite = new SpriteText(link.label);
-                          sprite.color = 'lightgrey';
-                          sprite.textHeight = 1.5;
-                          return sprite;
-                        }}
-                        linkPositionUpdate={(sprite, { start, end }) => {
-                          const middlePos = Object.assign(
-                            ...['x', 'y', 'z'].map((c) => ({
-                              [c]: start[c] + (end[c] - start[c]) / 2,
-                            })),
-                          );
-                          Object.assign(sprite.position, middlePos);
-                        }}
-                        onNodeClick={this.handleNodeClick.bind(this)}
-                        onNodeRightClick={(node, event) => {
-                          // eslint-disable-next-line no-param-reassign
-                          node.fx = undefined;
-                          // eslint-disable-next-line no-param-reassign
-                          node.fy = undefined;
-                          // eslint-disable-next-line no-param-reassign
-                          node.fz = undefined;
-                          this.handleDragEnd();
-                          this.forceUpdate();
-                        }}
-                        onNodeDrag={(node, translate) => {
-                          if (this.selectedNodes.has(node)) {
-                            [...this.selectedNodes]
-                              .filter((selNode) => selNode !== node)
-                            // eslint-disable-next-line no-shadow
-                              .forEach((selNode) => ['x', 'y', 'z'].forEach(
-                                // eslint-disable-next-line no-param-reassign,no-return-assign
-                                (coord) => (selNode[`f${coord}`] = selNode[coord] + translate[coord]),
-                              ));
-                          }
-                        }}
-                        onNodeDragEnd={(node) => {
-                          if (this.selectedNodes.has(node)) {
-                            // finished moving a selected node
-                            [...this.selectedNodes]
-                              .filter((selNode) => selNode !== node) // don't touch node being dragged
-                            // eslint-disable-next-line no-shadow
-                              .forEach((selNode) => {
-                                ['x', 'y'].forEach(
-                                  // eslint-disable-next-line no-param-reassign,no-return-assign
-                                  (coord) => (selNode[`f${coord}`] = undefined),
-                                );
-                                // eslint-disable-next-line no-param-reassign
-                                selNode.fx = selNode.x;
-                                // eslint-disable-next-line no-param-reassign
-                                selNode.fy = selNode.y;
-                                // eslint-disable-next-line no-param-reassign
-                                selNode.fz = selNode.z;
-                              });
-                          }
-                          // eslint-disable-next-line no-param-reassign
-                          node.fx = node.x;
-                          // eslint-disable-next-line no-param-reassign
-                          node.fy = node.y;
-                          // eslint-disable-next-line no-param-reassign
-                          node.fz = node.z;
-                        }}
-                        onLinkClick={this.handleLinkClick.bind(this)}
-                        onBackgroundClick={this.handleBackgroundClick.bind(this)}
-                        cooldownTicks={modeFixed ? 0 : undefined}
-                        dagMode={
-                            // eslint-disable-next-line no-nested-ternary
-                            modeTree === 'horizontal'
-                              ? 'lr'
-                              : modeTree === 'vertical'
-                                ? 'td'
-                                : undefined
-                        }
-                    />
-                ) : (
-                    <RectangleSelection
-                        onSelect={(e, coords) => {
-                          this.handleRectSelectMove(e, coords);
-                        }}
-                        onMouseUp={(e) => {
-                          this.handleRectSelectUp(e);
-                        }}
-                        style={{
-                          backgroundColor: hexToRGB(theme.palette.background.accent, 0.3),
-                          borderColor: theme.palette.warning.main,
-                        }}
-                        disabled={!selectModeFree}
-                    >
-                        <ForceGraph2D
-                            ref={this.graph}
-                            width={graphWidth}
-                            height={graphHeight}
-                            graphData={graphData}
-                            onZoom={this.onZoom.bind(this)}
-                            onZoomEnd={this.handleZoomEnd.bind(this)}
-                            nodeRelSize={4}
-                            enablePanInteraction={!selectModeFree}
-                            nodeCanvasObject={(node, ctx) => nodePaint(
-                              {
-                                selected: theme.palette.secondary.main,
-                                inferred: theme.palette.warning.main,
-                              },
-                              node,
-                              node.color,
-                              ctx,
-                              this.selectedNodes.has(node),
-                              node.isNestedInferred,
-                            )
-                            }
-                            nodePointerAreaPaint={nodeAreaPaint}
-                            // linkDirectionalParticles={(link) => (this.selectedLinks.has(link) ? 20 : 0)}
-                            // linkDirectionalParticleWidth={1}
-                            // linkDirectionalParticleSpeed={() => 0.004}
-                            linkCanvasObjectMode={() => 'after'}
-                            linkCanvasObject={(link, ctx) => (displayLabels
-                              ? linkPaint(link, ctx, theme.palette.text.primary)
-                              : null)
-                            }
-                            linkColor={(link) => {
-                              // eslint-disable-next-line no-nested-ternary
-                              return this.selectedLinks.has(link)
-                                ? theme.palette.secondary.main
-                                : link.isNestedInferred
-                                  ? theme.palette.warning.main
-                                  : theme.palette.primary.main;
-                            }}
-                            linkLineDash={(link) => (link.inferred || link.isNestedInferred ? [2, 1] : null)
-                            }
-                            linkDirectionalArrowLength={3}
-                            linkDirectionalArrowRelPos={0.99}
-                            onNodeClick={this.handleNodeClick.bind(this)}
-                            onNodeRightClick={(node) => {
-                              // eslint-disable-next-line no-param-reassign
-                              node.fx = undefined;
-                              // eslint-disable-next-line no-param-reassign
-                              node.fy = undefined;
-                              this.handleDragEnd();
-                              this.forceUpdate();
-                            }}
-                            onNodeDrag={(node, translate) => {
-                              if (this.selectedNodes.has(node)) {
-                                [...this.selectedNodes]
-                                  .filter((selNode) => selNode !== node)
-                                // eslint-disable-next-line no-shadow
-                                  .forEach((selNode) => ['x', 'y'].forEach(
-                                    // eslint-disable-next-line no-param-reassign,no-return-assign
-                                    (coord) => (selNode[`f${coord}`] = selNode[coord] + translate[coord]),
-                                  ));
-                              }
-                            }}
-                            onNodeDragEnd={(node) => {
-                              if (this.selectedNodes.has(node)) {
-                                // finished moving a selected node
-                                [...this.selectedNodes]
-                                  .filter((selNode) => selNode !== node) // don't touch node being dragged
-                                // eslint-disable-next-line no-shadow
-                                  .forEach((selNode) => {
-                                    ['x', 'y'].forEach(
-                                      // eslint-disable-next-line no-param-reassign,no-return-assign
-                                      (coord) => (selNode[`f${coord}`] = undefined),
-                                    );
-                                    // eslint-disable-next-line no-param-reassign
-                                    selNode.fx = selNode.x;
-                                    // eslint-disable-next-line no-param-reassign
-                                    selNode.fy = selNode.y;
-                                  });
-                              }
-                              // eslint-disable-next-line no-param-reassign
-                              node.fx = node.x;
-                              // eslint-disable-next-line no-param-reassign
-                              node.fy = node.y;
-                              this.handleDragEnd();
-                            }}
-                            onLinkClick={this.handleLinkClick.bind(this)}
-                            onBackgroundClick={this.handleBackgroundClick.bind(this)}
-                            cooldownTicks={modeFixed ? 0 : undefined}
-                            dagMode={
-                                // eslint-disable-next-line no-nested-ternary
-                                modeTree === 'horizontal'
-                                  ? 'lr'
-                                  : modeTree === 'vertical'
-                                    ? 'td'
-                                    : undefined
-                            }
-                            dagLevelDistance={50}
-                        />
-                    </RectangleSelection>
-                )}
+            <Regraph
+                graphData={graphData}
+                handleReNodeClick={this.handleReNodeClick.bind(this)}
+                handleUpdateGraphData={this.handleUpdateGraphData.bind(this)}
+                saveRePositions={this.saveRePositions.bind(this)}
+                handleGroupSelectedNodes={this.handleGroupSelectedNodes.bind(this)}
+
+            />
             </div>
     );
   }

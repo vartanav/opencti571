@@ -1,5 +1,6 @@
 import * as R from 'ramda';
 import SpriteText from 'three-spritetext';
+import { clusters } from 'regraph/analysis';
 import { fromB64, toB64, truncate } from './String';
 import KillChainPhase from '../static/images/entities/kill-chain-phase.svg';
 import MarkingDefinition from '../static/images/entities/marking-definition.svg';
@@ -351,6 +352,78 @@ export const defaultKey = (n) => {
   return null;
 };
 
+const labelStyle = {
+  backgroundColor: 'rgba(0,0,0,0)',
+  color: 'rgb(202, 209, 216)',
+  position: 's',
+};
+export const reGraphData = (graphData, threshold = 4) => {
+  const data = {};
+  graphData.nodes.forEach((n) => {
+    // console.log(n);
+    // console.log(graphImages[n.entity_type]);
+    data[n.id] = {
+      ...n,
+      image: graphImages[n.entity_type].src || graphImages.Unknown.src,
+      label: [{
+        ...labelStyle,
+        text: truncate(n.name, 24),
+      }],
+      // times: [{ time: new Date(n.defaultDate) }],
+    };
+  });
+  graphData.links.forEach((l) => {
+    // console.log(l);
+    data[l.id] = {
+      id1: l.source_id || l.source.id,
+      id2: l.target_id || l.target.id,
+      end2: { arrow: true },
+      width: 1,
+      color: 'rgb(30,107,183)',
+      relationshipType: l.relationship_type,
+    };
+  });
+  const acc = {};
+  Object.values(data).forEach((l) => {
+    if (!l.relationshipType) return;
+    if (!acc[l.id1]) {
+      acc[l.id1] = [];
+    }
+    acc[l.id1].push({
+      id: l.id2,
+      relationshipType: l.relationshipType,
+    });
+    if (!acc[l.id2]) {
+      acc[l.id2] = [];
+    }
+    acc[l.id2].push({
+      id: l.id1,
+      relationshipType: l.relationshipType,
+    });
+  });
+  const groups = {};
+  Object.entries(acc).forEach(([k, v]) => {
+    if (v.length > 1) {
+      return;
+    }
+    const gid = btoa(JSON.stringify(v));
+    if (!groups[gid]) {
+      groups[gid] = [];
+    }
+    groups[gid].push(k);
+  });
+  Object.entries(groups).forEach(([k, v]) => {
+    if (v.length < threshold) {
+      return;
+    }
+    v.forEach((id) => {
+      data[id].data = { group: k };
+    });
+  });
+  console.log(data);
+  return data;
+};
+
 export const defaultValue = (n, tooltip = false) => {
   if (!n) return '';
   if (typeof n.definition === 'object') {
@@ -520,34 +593,47 @@ export const applyLinkFilters = (
   ),
 )(linksData);
 
-export const groupSelectedNodes = (selectedNodes, graphData, graphObjects) => {
+export const extractNodesByGroupName = (groupName, data) => {
+  console.log(groupName, data);
+  return data;
+};
+export const recogniseGroupByName = (name) => /^Multiple\s.*\n\d+\-\d+\-\d+$/.test(name);
+export const groupSelectedNodes = (selectedNodes, graphData) => {
   const { nodes, links } = graphData;
-  const xs = [];
-  const ys = [];
-  const groupOfNodeIds = [];
-  // don't know which one is the best  graphData or graphObjects
-  for (let i = 0; i < nodes.length; i++) {
-    if (selectedNodes.find((n) => n.id === nodes[i].id)) {
-      xs.push(nodes[i].x);
-      ys.push(nodes[i].y);
-      groupOfNodeIds.push(nodes[i].id);
-    }
-  }
-  const xsAvarage = R.pipe(R.reduce(R.add, 0), R.divide(R.__, xs.length))(xs);
-  const ysAvarage = R.pipe(R.reduce(R.add, 0), R.divide(R.__, ys.length))(ys);
-  // generate uuid
-  const groupUid = new Date().toISOString();
-
+  const nodeIds = new Set(selectedNodes.map((n) => n.id));
+  const gid = `Multiple ... (${new Date().toISOString()})`;
   nodes.forEach((n) => {
-    if (groupOfNodeIds.includes(n.id)) {
-      n.group = {
-        groupName: `Multiple ${n.entity_type} ... (${groupUid})`,
-        x: xsAvarage,
-        y: ysAvarage,
-      };
+    if (nodeIds.has(n.id)) {
+      n.data = { group: gid };
     }
   });
-
+  // const xs = [];
+  // const ys = [];
+  // const groupOfNodeIds = [];
+  //
+  // for (let i = 0; i < nodes.length; i++) {
+  //   if (selectedNodes.find((n) => n.id === nodes[i].id)) {
+  //     xs.push(nodes[i].x);
+  //     ys.push(nodes[i].y);
+  //     groupOfNodeIds.push(nodes[i].id);
+  //   }
+  // }
+  // const xsAvarage = R.pipe(R.reduce(R.add, 0), R.divide(R.__, xs.length))(xs);
+  // const ysAvarage = R.pipe(R.reduce(R.add, 0), R.divide(R.__, ys.length))(ys);
+  // // generate uuid
+  // const groupUid = new Date().toISOString();
+  //
+  // nodes.forEach((n) => {
+  //   if (groupOfNodeIds.includes(n.id)) {
+  //     n.group = {
+  //       groupName: `Multiple ${n.entity_type} ... (${groupUid})`,
+  //       groupIds: groupOfNodeIds,
+  //       x: xsAvarage,
+  //       y: ysAvarage,
+  //     };
+  //   }
+  // });
+  console.log({ nodes, links });
   return {
     nodes,
     links,
@@ -592,7 +678,6 @@ export const applyFilters = (
 
 function handleVisualGroups(objects, graphData) {
   const grouped = {};
-  const newObjects = [];
   for (const o of objects) {
     if (graphData[o.id]?.group?.groupName) {
       grouped[graphData[o.id].group.groupName] = {
@@ -602,11 +687,9 @@ function handleVisualGroups(objects, graphData) {
         y: graphData[o.id].group.groupName.y,
         name: graphData[o.id].group.groupName,
       };
-    } else {
-      newObjects.push(o);
     }
   }
-  return newObjects.concat(Object.values(grouped));
+  return objects.concat(Object.values(grouped));
 }
 
 export const buildCorrelationData = (

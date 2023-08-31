@@ -118,11 +118,13 @@ EntityDetailsRightsBarProps
             onChange={handleSelectEntity}
             value={selectedEntity.id}
           >
-            {uniqSelectedEntities.map((entity) => (
+            {
+              uniqSelectedEntities.map((entity) => (
               <MenuItem key={entity.id} value={entity.id}>
-                {entity.label}
+                {entity.label[0].text}
               </MenuItem>
-            ))}
+            ))
+            }
           </Select>
         </FormControl>
         {/* Need to be handle */}

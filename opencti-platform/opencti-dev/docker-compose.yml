@@ -76,7 +76,7 @@ services:
   worker:
     image: opencti/worker:5.7.1
     environment:
-      - OPENCTI_URL=http://192.168.68.65:4000
+      - OPENCTI_URL=http://192.168.0.32:4000
       - OPENCTI_TOKEN=77af4679-5c82-4828-bd70-87b5222aad5a
       - WORKER_LOG_LEVEL=info
     network_mode: host
@@ -88,7 +88,7 @@ services:
   connector-import-file-stix:
     image: opencti/connector-import-file-stix:5.7.1
     environment:
-      - OPENCTI_URL=http://192.168.68.65:4000
+      - OPENCTI_URL=http://192.168.0.32:4000
       - OPENCTI_TOKEN=77af4679-5c82-4828-bd70-87b5222aad5a
       - CONNECTOR_ID=importer-file-stix
       - CONNECTOR_TYPE=INTERNAL_IMPORT_FILE

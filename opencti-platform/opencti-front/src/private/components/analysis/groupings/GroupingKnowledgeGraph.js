@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import * as PropTypes from 'prop-types';
 import * as R from 'ramda';
-import SpriteText from 'three-spritetext';
 import { debounce } from 'rxjs/operators';
 import { Subject, timer } from 'rxjs';
 import { graphql, createFragmentContainer } from 'react-relay';
 import ForceGraph2D from 'react-force-graph-2d';
-import ForceGraph3D from 'react-force-graph-3d';
 import withTheme from '@mui/styles/withTheme';
 import { withRouter } from 'react-router-dom';
 import inject18n from '../../../../components/i18n';
