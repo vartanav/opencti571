@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { Chart } from 'regraph';
 import has from 'lodash/has';
 import mapValues from 'lodash/mapValues';
@@ -15,8 +15,8 @@ function isSummaryLink(id) {
   return id.startsWith('_combolink_');
 }
 
-export function Regraph(props) {
-  const { graphData , handleReNodeClick } = props;
+export const Regraph = forwardRef((props, ref) => {
+  const { graphData, handleReNodeClick } = props;
   const theme = useTheme();
   const [state, setState] = useState({
     selection: {},
@@ -28,7 +28,6 @@ export function Regraph(props) {
     },
     layout: { tightness: 8 },
   });
-
   const comboLookup = React.useRef({});
   const nextComboId = React.useRef(0);
 
@@ -171,18 +170,19 @@ export function Regraph(props) {
     });
   };
 
+  useImperativeHandle(ref, () => ({
+    uncombineSelection,
+  }));
+
   return (
         <div className="story">
             <div className="options">
                 <button type="button" onClick={combineSelection}>
                     Combine Selection
                 </button>
-                <button type="button" onClick={uncombineSelection}>
-                    Uncombine Selection
-                </button>
             </div>
             <Chart
-                style={{ height: '950px'}}
+                style={{ height: '950px' }}
                 items={state.items}
                 selection={state.selection}
                 combine={state.combine}
@@ -205,4 +205,4 @@ export function Regraph(props) {
             />
         </div>
   );
-}
+});

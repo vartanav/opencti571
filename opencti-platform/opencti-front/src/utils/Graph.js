@@ -1,6 +1,5 @@
 import * as R from 'ramda';
 import SpriteText from 'three-spritetext';
-import { clusters } from 'regraph/analysis';
 import { fromB64, toB64, truncate } from './String';
 import KillChainPhase from '../static/images/entities/kill-chain-phase.svg';
 import MarkingDefinition from '../static/images/entities/marking-definition.svg';
@@ -357,7 +356,7 @@ const labelStyle = {
   color: 'rgb(202, 209, 216)',
   position: 's',
 };
-export const reGraphData = (graphData, threshold = 4) => {
+export const reGraphData = (graphData, threshold = 3) => {
   const data = graphData.nodes.reduce((acc, n) => {
     acc[n.id] = {
       ...n,
@@ -594,7 +593,6 @@ export const applyLinkFilters = (
   ),
 )(linksData);
 
-export const recogniseGroupByName = (name) => /^Multiple\s.*\n\d+\-\d+\-\d+$/.test(name);
 export const groupSelectedNodes = (selectedNodes, graphData) => {
   const { nodes, links } = graphData;
   const nodeIds = new Set(selectedNodes.map((n) => n.id));
@@ -604,33 +602,6 @@ export const groupSelectedNodes = (selectedNodes, graphData) => {
       n.data = { group: gid };
     }
   });
-  // const xs = [];
-  // const ys = [];
-  // const groupOfNodeIds = [];
-  //
-  // for (let i = 0; i < nodes.length; i++) {
-  //   if (selectedNodes.find((n) => n.id === nodes[i].id)) {
-  //     xs.push(nodes[i].x);
-  //     ys.push(nodes[i].y);
-  //     groupOfNodeIds.push(nodes[i].id);
-  //   }
-  // }
-  // const xsAvarage = R.pipe(R.reduce(R.add, 0), R.divide(R.__, xs.length))(xs);
-  // const ysAvarage = R.pipe(R.reduce(R.add, 0), R.divide(R.__, ys.length))(ys);
-  // // generate uuid
-  // const groupUid = new Date().toISOString();
-  //
-  // nodes.forEach((n) => {
-  //   if (groupOfNodeIds.includes(n.id)) {
-  //     n.group = {
-  //       groupName: `Multiple ${n.entity_type} ... (${groupUid})`,
-  //       groupIds: groupOfNodeIds,
-  //       x: xsAvarage,
-  //       y: ysAvarage,
-  //     };
-  //   }
-  // });
-  console.log({ nodes, links });
   return {
     nodes,
     links,

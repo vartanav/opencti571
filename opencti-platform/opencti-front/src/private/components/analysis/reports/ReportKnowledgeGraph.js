@@ -441,6 +441,7 @@ class ReportKnowledgeGraphComponent extends Component {
     this.initialized = false;
     this.zoomed = 0;
     this.graph = React.createRef();
+    this.refForRegraph = React.createRef();
     this.selectedNodes = new Set();
     this.selectedLinks = new Set();
     this.comboLookup = React.createRef({});
@@ -1464,6 +1465,7 @@ class ReportKnowledgeGraphComponent extends Component {
                     navOpen={navOpen}
                     isUnGroupingEnabled={this.isUnGroupingEnabled.bind(this)}
                     groupSelectedNodes={this.handleGroupSelectedNodes.bind(this)}
+                    ungroupSelectedNodes={()=>{this.refForRegraph.current.uncombineSelection()}}
                 />
                 {selectedEntities.length > 0 && (
                     <EntitiesDetailsRightsBar
@@ -1477,7 +1479,7 @@ class ReportKnowledgeGraphComponent extends Component {
                 handleUpdateGraphData={this.handleUpdateGraphData.bind(this)}
                 saveRePositions={this.saveRePositions.bind(this)}
                 handleGroupSelectedNodes={this.handleGroupSelectedNodes.bind(this)}
-
+                ref={this.refForRegraph}
             />
             </div>
     );

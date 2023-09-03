@@ -351,6 +351,7 @@ class ReportKnowledgeGraphBar extends Component {
       navOpen,
       isUnGroupingEnabled,
       groupSelectedNodes,
+      ungroupSelectedNodes
     } = this.props;
     const {
       openStixCoreObjectsTypes,
@@ -427,8 +428,8 @@ class ReportKnowledgeGraphBar extends Component {
         ? [selectedLinks[0]]
         : [selectedNodes[0]];
     }
-    const groupingEnabled = !!selectedNodes.length
-    const unGroupingEnabled = isUnGroupingEnabled(selectedNodes);
+    const groupingEnabled = false;
+    const unGroupingEnabled = true;
     return (
       <Drawer
         anchor="bottom"
@@ -836,9 +837,7 @@ class ReportKnowledgeGraphBar extends Component {
                     <span>
                       <IconButton
                           color="primary"
-                          onClick={(e) => {
-                            console.log('Ungrouping not implemented yet');
-                          }}
+                          onClick={ungroupSelectedNodes}
                           disabled={!unGroupingEnabled}
                           size="large"
                       >
