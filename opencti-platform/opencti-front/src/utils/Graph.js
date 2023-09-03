@@ -358,69 +358,70 @@ const labelStyle = {
   position: 's',
 };
 export const reGraphData = (graphData, threshold = 4) => {
-  const data = {};
-  graphData.nodes.forEach((n) => {
-    // console.log(n);
-    // console.log(graphImages[n.entity_type]);
-    data[n.id] = {
+  const data = graphData.nodes.reduce((acc, n) => {
+    acc[n.id] = {
       ...n,
-      image: graphImages[n.entity_type].src || graphImages.Unknown.src,
+      image: graphImages[n.entity_type]?.src || graphImages.Unknown.src,
       label: [{
         ...labelStyle,
         text: truncate(n.name, 24),
       }],
-      // times: [{ time: new Date(n.defaultDate) }],
     };
-  });
-  graphData.links.forEach((l) => {
-    // console.log(l);
+    return acc;
+  }, {});
+
+  for (const l of graphData.links) {
+    const id1 = l.source_id || l.source.id;
+    const id2 = l.target_id || l.target.id;
+    const gid = btoa(JSON.stringify([{ id: id1 }, { id: id2 }]));
     data[l.id] = {
-      id1: l.source_id || l.source.id,
-      id2: l.target_id || l.target.id,
+      id1,
+      id2,
       end2: { arrow: true },
       width: 1,
       color: 'rgb(30,107,183)',
       relationshipType: l.relationship_type,
+      data: { group: gid },
     };
-  });
-  const acc = {};
-  Object.values(data).forEach((l) => {
-    if (!l.relationshipType) return;
-    if (!acc[l.id1]) {
-      acc[l.id1] = [];
+  }
+  const groupMap = new Map();
+
+  for (const l of graphData.links) {
+    const id1 = l.source_id || l.source.id;
+    const id2 = l.target_id || l.target.id;
+    const gid = btoa(JSON.stringify([{ id: id1 }, { id: id2 }]));
+
+    data[l.id] = {
+      id1,
+      id2,
+      end2: { arrow: true },
+      width: 1,
+      color: 'rgb(30,107,183)',
+      relationshipType: l.relationship_type,
+      data: { group: gid },
+    };
+
+    // Update the groupMap
+    if (!groupMap.has(id1)) {
+      groupMap.set(id1, []);
     }
-    acc[l.id1].push({
-      id: l.id2,
-      relationshipType: l.relationshipType,
-    });
-    if (!acc[l.id2]) {
-      acc[l.id2] = [];
+    groupMap.get(id1).push({ id: id2, relationshipType: l.relationship_type });
+
+    if (!groupMap.has(id2)) {
+      groupMap.set(id2, []);
     }
-    acc[l.id2].push({
-      id: l.id1,
-      relationshipType: l.relationshipType,
-    });
-  });
-  const groups = {};
-  Object.entries(acc).forEach(([k, v]) => {
-    if (v.length > 1) {
-      return;
+    groupMap.get(id2).push({ id: id1, relationshipType: l.relationship_type });
+  }
+
+  // Iterate over groupMap to apply grouping based on threshold
+  for (const [groupId, groupNodes] of groupMap) {
+    if (groupNodes.length >= threshold) {
+      groupNodes.forEach((node) => {
+        data[node.id].data = { group: groupId };
+      });
     }
-    const gid = btoa(JSON.stringify(v));
-    if (!groups[gid]) {
-      groups[gid] = [];
-    }
-    groups[gid].push(k);
-  });
-  Object.entries(groups).forEach(([k, v]) => {
-    if (v.length < threshold) {
-      return;
-    }
-    v.forEach((id) => {
-      data[id].data = { group: k };
-    });
-  });
-  console.log(data);
+  }
+
   return data;
 };
 
@@ -593,10 +594,6 @@ export const applyLinkFilters = (
   ),
 )(linksData);
 
-export const extractNodesByGroupName = (groupName, data) => {
-  console.log(groupName, data);
-  return data;
-};
 export const recogniseGroupByName = (name) => /^Multiple\s.*\n\d+\-\d+\-\d+$/.test(name);
 export const groupSelectedNodes = (selectedNodes, graphData) => {
   const { nodes, links } = graphData;

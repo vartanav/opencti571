@@ -20,6 +20,8 @@ services:
       - xpack.ml.enabled=false
       - xpack.security.enabled=false
       - "ES_JAVA_OPTS=-Xms2G -Xmx2G"
+    volumes:
+      - elastic_search_data:/usr/share/elasticsearch/data
     restart: unless-stopped
     ulimits:
       memlock:
@@ -100,3 +102,7 @@ services:
       - CONNECTOR_LOG_LEVEL=info
     network_mode: host
     restart: always
+
+volumes:
+  elastic_search_data:
+    external: true
