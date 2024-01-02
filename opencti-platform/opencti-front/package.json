@@ -25,6 +25,8 @@
     "formik-mui": "5.0.0-alpha.0",
     "formik-mui-lab": "1.0.0",
     "graphql": "16.6.0",
+    "highcharts": "^11.2.0",
+    "highcharts-react-official": "^3.2.1",
     "html-to-image": "1.11.11",
     "html-to-pdfmake": "2.4.16",
     "js-base64": "3.7.5",

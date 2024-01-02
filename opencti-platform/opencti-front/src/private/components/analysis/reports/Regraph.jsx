@@ -5,6 +5,8 @@ import mapValues from 'lodash/mapValues';
 import merge from 'lodash/merge';
 import omit from 'lodash/omit';
 import { useTheme } from '@mui/material/styles';
+import { Menu } from '@mui/material';
+import MenuItem from '@mui/material/MenuItem';
 import { reGraphData } from '../../../../utils/Graph';
 
 function isLink(item) {
@@ -14,10 +16,27 @@ function isLink(item) {
 function isSummaryLink(id) {
   return id.startsWith('_combolink_');
 }
+const ContextMenu = ({ close, open, x, y, menuOnNode, canBeLinked }) => {
+  return (
+        <Menu
+            anchorReference="anchorPosition"
+            anchorPosition={{ top: y, left: x }}
+            open={open}
+        >
+            {menuOnNode !== null ? <MenuItem onClick={close}>Edit</MenuItem> : null}
+            {canBeLinked ? <MenuItem onClick={close}>Link</MenuItem> : null}
+            <MenuItem onClick={close}>Create</MenuItem>
+        </Menu>
+  );
+};
 
 export const Regraph = forwardRef((props, ref) => {
   const { graphData, handleReNodeClick } = props;
   const theme = useTheme();
+  const [dragSelector, setDragSelector] = useState(false);
+  const [menuOpen, setOpenMenu] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const [menuOnNode, setMenuOnNode] = useState(null);
   const [state, setState] = useState({
     selection: {},
     items: reGraphData(graphData),
@@ -95,7 +114,7 @@ export const Regraph = forwardRef((props, ref) => {
   const chartChangeHandler = (change) => {
     const { selection } = change;
     if (selection) {
-      // handleReNodeClick(selection);
+      handleReNodeClick(selection);
       setState((current) => {
         return { ...current, selection };
       });
@@ -174,13 +193,20 @@ export const Regraph = forwardRef((props, ref) => {
     uncombineSelection,
   }));
 
+  const contextMenu = (event) => {
+    setMenuOnNode(event.id);
+    setOpenMenu(true);
+    setMenuPosition({ x: event.x, y: event.y });
+  };
+
+  const canBeLinked= props.selectedNodes.length === 2;
+
+
   return (
-        <div className="story">
-            <div className="options">
-                <button type="button" onClick={combineSelection}>
-                    Combine Selection
-                </button>
-            </div>
+        <div
+            onContextMenu={(e) => e.preventDefault()}
+            style={{ width: '100%', height: '100%' }}
+        >
             <Chart
                 style={{ height: '950px' }}
                 items={state.items}
@@ -193,7 +219,8 @@ export const Regraph = forwardRef((props, ref) => {
                     'fa-user': { size: 0.9 },
                     'fa-users': { size: 0.85 },
                   },
-                  handMode: false,
+                  handMode: dragSelector,
+                  navigation: false,
                   overview: false,
                   backgroundColor: theme.palette.background.default,
                 }}
@@ -202,6 +229,15 @@ export const Regraph = forwardRef((props, ref) => {
                 onCombineLinks={combineLinksHandler}
                 onChange={chartChangeHandler}
                 onDoubleClick={doubleClickHandler}
+                onContextMenu={contextMenu}
+            />
+            <ContextMenu
+                close={() => setOpenMenu(false)}
+                open={menuOpen}
+                x={menuPosition.x}
+                y={menuPosition.y}
+                menuOnNode={menuOnNode}
+                canBeLinked={canBeLinked}
             />
         </div>
   );

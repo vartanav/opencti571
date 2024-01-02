@@ -24,6 +24,7 @@ import {
   AddOutlined,
   CancelOutlined,
   MapOutlined,
+  Construction,
 } from '@mui/icons-material';
 import {
   AlignHorizontalLeft,
@@ -42,6 +43,7 @@ import {
   ViewListOutline,
   StarSettingsOutline,
   FormatListNumberedRtl,
+
 } from 'mdi-material-ui';
 import makeStyles from '@mui/styles/makeStyles';
 import IconButton from '@mui/material/IconButton';
@@ -58,7 +60,9 @@ import Filters from '../../common/lists/Filters';
 import { isUniqFilter } from '../../../../utils/filters/filtersUtils';
 import { capitalizeFirstLetter, truncate } from '../../../../utils/String';
 import { QueryRenderer } from '../../../../relay/environment';
-import { stixCyberObservablesLinesAttributesQuery } from '../../observations/stix_cyber_observables/StixCyberObservablesLines';
+import {
+  stixCyberObservablesLinesAttributesQuery,
+} from '../../observations/stix_cyber_observables/StixCyberObservablesLines';
 import { ignoredAttributesInDashboards } from '../../../../utils/Entity';
 import { isNotEmptyField } from '../../../../utils/utils';
 
@@ -313,6 +317,16 @@ const visualizationTypes = [
     isRelationships: false,
     isEntities: true,
   },
+  {
+    key: 'custom',
+    name: 'Custom',
+    dataSelectionLimit: 1,
+    category: 'custom',
+    availableParameters: [],
+    isRelationships: false,
+    isEntities: false,
+  },
+
 ];
 const indexedVisualizationTypes = R.indexBy(R.prop('key'), visualizationTypes);
 
@@ -444,7 +458,7 @@ const WidgetConfig = ({ widget, onComplete, closeMenu }) => {
       if (n === i) {
         if (
           dataSelection[i].filters[key]
-          && dataSelection[i].filters[key].length > 0
+                    && dataSelection[i].filters[key].length > 0
         ) {
           return {
             ...dataSelection[i],
@@ -486,7 +500,7 @@ const WidgetConfig = ({ widget, onComplete, closeMenu }) => {
       if (n === i) {
         if (
           dataSelection[i].dynamicFrom[key]
-          && dataSelection[i].dynamicFrom[key].length > 0
+                    && dataSelection[i].dynamicFrom[key].length > 0
         ) {
           return {
             ...dataSelection[i],
@@ -532,7 +546,7 @@ const WidgetConfig = ({ widget, onComplete, closeMenu }) => {
       if (n === i) {
         if (
           dataSelection[i].dynamicTo[key]
-          && dataSelection[i].dynamicTo[key].length > 0
+                    && dataSelection[i].dynamicTo[key].length > 0
         ) {
           return {
             ...dataSelection[i],
@@ -596,723 +610,750 @@ const WidgetConfig = ({ widget, onComplete, closeMenu }) => {
   const renderIcon = (key) => {
     switch (key) {
       case 'map':
-        return <MapOutlined fontSize="large" color="primary" />;
+        return <MapOutlined fontSize="large" color="primary"/>;
       case 'horizontal-bar':
-        return <AlignHorizontalLeft fontSize="large" color="primary" />;
+        return <AlignHorizontalLeft fontSize="large" color="primary"/>;
       case 'vertical-bar':
-        return <ChartBar fontSize="large" color="primary" />;
+        return <ChartBar fontSize="large" color="primary"/>;
       case 'donut':
-        return <ChartDonut fontSize="large" color="primary" />;
+        return <ChartDonut fontSize="large" color="primary"/>;
       case 'area':
-        return <ChartAreasplineVariant fontSize="large" color="primary" />;
+        return <ChartAreasplineVariant fontSize="large" color="primary"/>;
       case 'timeline':
-        return <ChartTimeline fontSize="large" color="primary" />;
+        return <ChartTimeline fontSize="large" color="primary"/>;
       case 'list':
-        return <ViewListOutline fontSize="large" color="primary" />;
+        return <ViewListOutline fontSize="large" color="primary"/>;
       case 'distribution-list':
-        return <FormatListNumberedRtl fontSize="large" color="primary" />;
+        return <FormatListNumberedRtl fontSize="large" color="primary"/>;
       case 'number':
-        return <Counter fontSize="large" color="primary" />;
+        return <Counter fontSize="large" color="primary"/>;
       case 'heatmap':
-        return <ChartBubble fontSize="large" color="primary" />;
+        return <ChartBubble fontSize="large" color="primary"/>;
       case 'line':
-        return <ChartLine fontSize="large" color="primary" />;
+        return <ChartLine fontSize="large" color="primary"/>;
       case 'radar':
-        return <Radar fontSize="large" color="primary" />;
+        return <Radar fontSize="large" color="primary"/>;
       case 'tree':
-        return <ChartTree fontSize="large" color="primary" />;
+        return <ChartTree fontSize="large" color="primary"/>;
       case 'bookmark':
-        return <StarSettingsOutline fontSize="large" color="primary" />;
+        return <StarSettingsOutline fontSize="large" color="primary"/>;
+      case 'custom':
+        return <Construction fontSize="large" color="primary"/>;
       default:
         return 'Go away';
     }
   };
   const renderTypes = () => {
     return (
-      <Grid
-        container={true}
-        spacing={3}
-        style={{ marginTop: 20, marginBottom: 20 }}
-      >
-        {visualizationTypes.map((visualizationType) => (
-          <Grid key={visualizationType.key} item={true} xs="4">
-            <Card variant="outlined" className={classes.card3}>
-              <CardActionArea
-                onClick={() => handleSelectType(visualizationType.key)}
-                style={{ height: '100%' }}
-              >
-                <CardContent>
-                  {renderIcon(visualizationType.key)}
-                  <Typography
-                    gutterBottom
-                    variant="body1"
-                    style={{ marginTop: 8 }}
-                  >
-                    {t(visualizationType.name)}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+            <Grid
+                container={true}
+                spacing={3}
+                style={{ marginTop: 20, marginBottom: 20 }}
+            >
+                {visualizationTypes.map((visualizationType) => (
+                    <Grid key={visualizationType.key} item={true} xs="4">
+                        <Card variant="outlined" className={classes.card3}>
+                            <CardActionArea
+                                onClick={() => handleSelectType(visualizationType.key)}
+                                style={{ height: '100%' }}
+                            >
+                                <CardContent>
+                                    {renderIcon(visualizationType.key)}
+                                    <Typography
+                                        gutterBottom
+                                        variant="body1"
+                                        style={{ marginTop: 8 }}
+                                    >
+                                        {t(visualizationType.name)}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                ))}
+            </Grid>
     );
   };
   const renderPerspective = () => {
     const isEntitiesAndRelationships = getCurrentIsEntities() && getCurrentIsRelationships();
     return (
-      <Grid
-        container={true}
-        spacing={3}
-        style={{ marginTop: 20, marginBottom: 20 }}
-      >
-        {getCurrentIsEntities() && (
-          <Grid item={true} xs={isEntitiesAndRelationships ? '6' : '12'}>
-            <Card variant="outlined" className={classes.card}>
-              <CardActionArea
-                onClick={() => handleSelectPerspective('entities')}
-                style={{ height: '100%' }}
-              >
-                <CardContent>
-                  <DatabaseOutline style={{ fontSize: 40 }} color="primary" />
-                  <Typography
-                    gutterBottom
-                    variant="h2"
-                    style={{ marginTop: 20 }}
-                  >
-                    {t('Entities')}
-                  </Typography>
-                  <br />
-                  <Typography variant="body1">
-                    {t('Display global knowledge with filters and criteria.')}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </Grid>
-        )}
-        {getCurrentIsRelationships() && (
-          <Grid item={true} xs={isEntitiesAndRelationships ? '6' : '12'}>
-            <Card variant="outlined" className={classes.card}>
-              <CardActionArea
-                onClick={() => handleSelectPerspective('relationships')}
-                style={{ height: '100%' }}
-              >
-                <CardContent>
-                  <FlaskOutline style={{ fontSize: 40 }} color="primary" />
-                  <Typography
-                    gutterBottom
-                    variant="h2"
-                    style={{ marginTop: 20 }}
-                  >
-                    {t('Knowledge graph')}
-                  </Typography>
-                  <br />
-                  <Typography variant="body1">
-                    {t(
-                      'Display specific knowledge using relationships and filters.',
-                    )}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </Grid>
-        )}
-      </Grid>
+            <Grid
+                container={true}
+                spacing={3}
+                style={{ marginTop: 20, marginBottom: 20 }}
+            >
+                {getCurrentIsEntities() && (
+                    <Grid item={true} xs={isEntitiesAndRelationships ? '6' : '12'}>
+                        <Card variant="outlined" className={classes.card}>
+                            <CardActionArea
+                                onClick={() => handleSelectPerspective('entities')}
+                                style={{ height: '100%' }}
+                            >
+                                <CardContent>
+                                    <DatabaseOutline style={{ fontSize: 40 }} color="primary"/>
+                                    <Typography
+                                        gutterBottom
+                                        variant="h2"
+                                        style={{ marginTop: 20 }}
+                                    >
+                                        {t('Entities')}
+                                    </Typography>
+                                    <br/>
+                                    <Typography variant="body1">
+                                        {t('Display global knowledge with filters and criteria.')}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )}
+                {getCurrentIsRelationships() && (
+                    <Grid item={true} xs={isEntitiesAndRelationships ? '6' : '12'}>
+                        <Card variant="outlined" className={classes.card}>
+                            <CardActionArea
+                                onClick={() => handleSelectPerspective('relationships')}
+                                style={{ height: '100%' }}
+                            >
+                                <CardContent>
+                                    <FlaskOutline style={{ fontSize: 40 }} color="primary"/>
+                                    <Typography
+                                        gutterBottom
+                                        variant="h2"
+                                        style={{ marginTop: 20 }}
+                                    >
+                                        {t('Knowledge graph')}
+                                    </Typography>
+                                    <br/>
+                                    <Typography variant="body1">
+                                        {t(
+                                          'Display specific knowledge using relationships and filters.',
+                                        )}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )}
+              { getCurrentCategory() === 'custom' && (
+                  <Grid item={true} xs={isEntitiesAndRelationships ? '6' : '12'}>
+                    <Card variant="outlined" className={classes.card}>
+                      <CardActionArea
+                          onClick={() => handleSelectPerspective('relationships')}
+                          style={{ height: '100%' }}
+                      >
+                        <CardContent>
+                          <FlaskOutline style={{ fontSize: 40 }} color="primary"/>
+                          <Typography
+                              gutterBottom
+                              variant="h2"
+                              style={{ marginTop: 20 }}
+                          >
+                            {t('Jupyter NoteBook')}
+                          </Typography>
+                          <br/>
+                          <Typography variant="body1">
+                            {t('create you custom view of your Jupyter notebook output.')}
+                          </Typography>
+                        </CardContent>
+                      </CardActionArea>
+                    </Card>
+                  </Grid>
+              )}
+            </Grid>
     );
   };
   const renderDataSelection = () => {
     return (
-      <div style={{ marginTop: 20 }}>
-        {Array(dataSelection.length)
-          .fill(0)
-          .map((_, i) => {
-            const style = dataSelection[i].perspective === 'entities'
-              ? 'step_entity'
-              : 'step_relationship';
-            return (
-              <div key={i} className={classes[style]}>
-                <IconButton
-                  disabled={dataSelection.length === 1}
-                  aria-label="Delete"
-                  className={classes.stepCloseButton}
-                  onClick={() => handleRemoveDataSelection(i)}
-                  size="large"
-                >
-                  <CancelOutlined fontSize="small" />
-                </IconButton>
-                <div style={{ display: 'flex', width: '100%' }}>
-                  <TextField
-                    style={{ flex: 1 }}
-                    variant="standard"
-                    label={`${t('Label')} (${dataSelection[i].perspective})`}
-                    fullWidth={true}
-                    value={dataSelection[i].label}
-                    onChange={(event) => handleChangeDataValidationLabel(i, event.target.value)
-                    }
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment
-                          position="end"
-                          style={{
-                            position: 'absolute',
-                            display: 'flex',
-                            right: 5,
-                          }}
+            <div style={{ marginTop: 20 }}>
+                {Array(dataSelection.length)
+                  .fill(0)
+                  .map((_, i) => {
+                    const style = dataSelection[i].perspective === 'entities'
+                      ? 'step_entity'
+                      : 'step_relationship';
+                    return (
+                            <div key={i} className={classes[style]}>
+                                <IconButton
+                                    disabled={dataSelection.length === 1}
+                                    aria-label="Delete"
+                                    className={classes.stepCloseButton}
+                                    onClick={() => handleRemoveDataSelection(i)}
+                                    size="large"
+                                >
+                                    <CancelOutlined fontSize="small"/>
+                                </IconButton>
+                                <div style={{ display: 'flex', width: '100%' }}>
+                                    <TextField
+                                        style={{ flex: 1 }}
+                                        variant="standard"
+                                        label={`${t('Label')} (${dataSelection[i].perspective})`}
+                                        fullWidth={true}
+                                        value={dataSelection[i].label}
+                                        onChange={(event) => handleChangeDataValidationLabel(i, event.target.value)
+                                        }
+                                        InputProps={{
+                                          endAdornment: (
+                                                <InputAdornment
+                                                    position="end"
+                                                    style={{
+                                                      position: 'absolute',
+                                                      display: 'flex',
+                                                      right: 5,
+                                                    }}
+                                                >
+                                                    <Filters
+                                                        availableFilterKeys={
+                                                            (dataSelection[i].perspective ?? perspective)
+                                                            === 'entities'
+                                                              ? entitiesFilters
+                                                              : relationshipsFilters
+                                                        }
+                                                        availableEntityTypes={[
+                                                          'Stix-Domain-Object',
+                                                          'Stix-Cyber-Observable',
+                                                        ]}
+                                                        handleAddFilter={(key, id, value) => handleAddDataValidationFilter(i, key, id, value)
+                                                        }
+                                                        noDirectFilters={true}
+                                                    />
+                                                    {(dataSelection[i].perspective ?? perspective)
+                                                        === 'relationships' && (
+                                                            <Filters
+                                                                availableFilterKeys={entitiesFilters}
+                                                                availableEntityTypes={[
+                                                                  'Stix-Domain-Object',
+                                                                  'Stix-Cyber-Observable',
+                                                                ]}
+                                                                handleAddFilter={(key, id, value) => handleAddDataValidationDynamicFrom(
+                                                                  i,
+                                                                  key,
+                                                                  id,
+                                                                  value,
+                                                                )
+                                                                }
+                                                                noDirectFilters={true}
+                                                                type="from"
+                                                            />
+                                                    )}
+                                                    {(dataSelection[i].perspective ?? perspective)
+                                                        === 'relationships' && (
+                                                            <Filters
+                                                                availableFilterKeys={entitiesFilters}
+                                                                availableEntityTypes={[
+                                                                  'Stix-Domain-Object',
+                                                                  'Stix-Cyber-Observable',
+                                                                ]}
+                                                                handleAddFilter={(key, id, value) => handleAddDataValidationDynamicTo(
+                                                                  i,
+                                                                  key,
+                                                                  id,
+                                                                  value,
+                                                                )
+                                                                }
+                                                                noDirectFilters={true}
+                                                                type="to"
+                                                            />
+                                                    )}
+                                                </InputAdornment>
+                                          ),
+                                        }}
+                                    />
+                                </div>
+                                <div className="clearfix"/>
+                                <div className={classes.filters}>
+                                    {R.map((currentFilter) => {
+                                      const label = `${truncate(
+                                        t(`filter_${currentFilter[0]}`),
+                                        20,
+                                      )}`;
+                                      const localFilterMode = currentFilter[0].endsWith('not_eq')
+                                        ? t('AND')
+                                        : t('OR');
+                                      const values = (
+                                            <span>
+                        {R.map(
+                          (n) => (
+                                <span key={n.value}>
+                              {n.value && n.value.length > 0
+                                ? truncate(n.value, 15)
+                                : t('No label')}{' '}
+                                    {R.last(currentFilter[1]).value !== n.value && (
+                                        <code>{localFilterMode}</code>
+                                    )}{' '}
+                            </span>
+                          ),
+                          currentFilter[1],
+                        )}
+                      </span>
+                                      );
+                                      return (
+                                            <span key={currentFilter[0]}>
+                        <Chip
+                            classes={{ root: classes.filter }}
+                            label={
+                                <div>
+                                    <strong>{label}</strong>: {values}
+                                </div>
+                            }
+                            onDelete={() => handleRemoveDataSelectionFilter(i, currentFilter[0])
+                            }
+                        />
+                                                {R.last(R.toPairs(dataSelection[i].filters))[0]
+                                                    !== currentFilter[0] && (
+                                                        <Chip
+                                                            classes={{ root: classes.operator }}
+                                                            label={t('AND')}
+                                                        />
+                                                )}
+                      </span>
+                                      );
+                                    }, R.toPairs(dataSelection[i].filters))}
+                                    {R.map((currentFilter) => {
+                                      const label = `${truncate(
+                                        t(`filter_${currentFilter[0]}`),
+                                        20,
+                                      )}`;
+                                      const localFilterMode = currentFilter[0].endsWith('not_eq')
+                                        ? t('AND')
+                                        : t('OR');
+                                      const values = (
+                                            <span>
+                        {R.map(
+                          (n) => (
+                                <span key={n.value}>
+                              {n.value && n.value.length > 0
+                                ? truncate(n.value, 15)
+                                : t('No label')}{' '}
+                                    {R.last(currentFilter[1]).value !== n.value && (
+                                        <code>{localFilterMode}</code>
+                                    )}{' '}
+                            </span>
+                          ),
+                          currentFilter[1],
+                        )}
+                      </span>
+                                      );
+                                      return (
+                                            <span key={currentFilter[0]}>
+                        <Chip
+                            color="warning"
+                            classes={{ root: classes.filter }}
+                            label={
+                                <div>
+                                    <strong>{label}</strong>: {values}
+                                </div>
+                            }
+                            onDelete={() => handleRemoveDataSelectionDynamicFrom(
+                              i,
+                              currentFilter[0],
+                            )
+                            }
+                        />
+                                                {R.last(R.toPairs(dataSelection[i].dynamicFrom))[0]
+                                                    !== currentFilter[0] && (
+                                                        <Chip
+                                                            classes={{ root: classes.operator }}
+                                                            label={t('AND')}
+                                                        />
+                                                )}
+                      </span>
+                                      );
+                                    }, R.toPairs(dataSelection[i].dynamicFrom))}
+                                    {R.map((currentFilter) => {
+                                      const label = `${truncate(
+                                        t(`filter_${currentFilter[0]}`),
+                                        20,
+                                      )}`;
+                                      const localFilterMode = currentFilter[0].endsWith('not_eq')
+                                        ? t('AND')
+                                        : t('OR');
+                                      const values = (
+                                            <span>
+                        {R.map(
+                          (n) => (
+                                <span key={n.value}>
+                              {n.value && n.value.length > 0
+                                ? truncate(n.value, 15)
+                                : t('No label')}{' '}
+                                    {R.last(currentFilter[1]).value !== n.value && (
+                                        <code>{localFilterMode}</code>
+                                    )}{' '}
+                            </span>
+                          ),
+                          currentFilter[1],
+                        )}
+                      </span>
+                                      );
+                                      return (
+                                            <span key={currentFilter[0]}>
+                        <Chip
+                            color="success"
+                            classes={{ root: classes.filter }}
+                            label={
+                                <div>
+                                    <strong>{label}</strong>: {values}
+                                </div>
+                            }
+                            onDelete={() => handleRemoveDataSelectionDynamicTo(
+                              i,
+                              currentFilter[0],
+                            )
+                            }
+                        />
+                                                {R.last(R.toPairs(dataSelection[i].dynamicTo))[0]
+                                                    !== currentFilter[0] && (
+                                                        <Chip
+                                                            classes={{ root: classes.operator }}
+                                                            label={t('AND')}
+                                                        />
+                                                )}
+                      </span>
+                                      );
+                                    }, R.toPairs(dataSelection[i].dynamicTo))}
+                                </div>
+                            </div>
+                    );
+                  })}
+                {perspective === 'entities' && (
+                    <div className={classes.add}>
+                        <Button
+                            variant="contained"
+                            disabled={getCurrentDataSelectionLimit() === dataSelection.length}
+                            color="secondary"
+                            size="small"
+                            onClick={() => handleAddDataSelection('entities')}
+                            classes={{ root: classes.buttonAdd }}
                         >
-                          <Filters
-                            availableFilterKeys={
-                              (dataSelection[i].perspective ?? perspective)
-                              === 'entities'
-                                ? entitiesFilters
-                                : relationshipsFilters
-                            }
-                            availableEntityTypes={[
-                              'Stix-Domain-Object',
-                              'Stix-Cyber-Observable',
-                            ]}
-                            handleAddFilter={(key, id, value) => handleAddDataValidationFilter(i, key, id, value)
-                            }
-                            noDirectFilters={true}
-                          />
-                          {(dataSelection[i].perspective ?? perspective)
-                            === 'relationships' && (
-                            <Filters
-                              availableFilterKeys={entitiesFilters}
-                              availableEntityTypes={[
-                                'Stix-Domain-Object',
-                                'Stix-Cyber-Observable',
-                              ]}
-                              handleAddFilter={(key, id, value) => handleAddDataValidationDynamicFrom(
-                                i,
-                                key,
-                                id,
-                                value,
-                              )
-                              }
-                              noDirectFilters={true}
-                              type="from"
-                            />
-                          )}
-                          {(dataSelection[i].perspective ?? perspective)
-                            === 'relationships' && (
-                            <Filters
-                              availableFilterKeys={entitiesFilters}
-                              availableEntityTypes={[
-                                'Stix-Domain-Object',
-                                'Stix-Cyber-Observable',
-                              ]}
-                              handleAddFilter={(key, id, value) => handleAddDataValidationDynamicTo(
-                                i,
-                                key,
-                                id,
-                                value,
-                              )
-                              }
-                              noDirectFilters={true}
-                              type="to"
-                            />
-                          )}
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
+                            <AddOutlined fontSize="small"/>
+                        </Button>
+                    </div>
+                )}
+                {perspective === 'relationships' && (
+                    <div className={classes.add}>
+                        <Button
+                            style={{ marginRight: 20 }}
+                            variant="contained"
+                            disabled={getCurrentDataSelectionLimit() === dataSelection.length}
+                            size="small"
+                            onClick={() => handleAddDataSelection('relationships')}
+                            classes={{ root: classes.buttonAdd }}
+                        >
+                            <AddOutlined fontSize="small"/> {t('Relationships')}
+                        </Button>
+                        <Button
+                            variant="contained"
+                            disabled={getCurrentDataSelectionLimit() === dataSelection.length}
+                            color="secondary"
+                            size="small"
+                            onClick={() => handleAddDataSelection('entities')}
+                            classes={{ root: classes.buttonAdd }}
+                        >
+                            <AddOutlined fontSize="small"/> {t('Entities')}
+                        </Button>
+                    </div>
+                )}
+                <div className={classes.buttons}>
+                    <Button
+                        disabled={!isDataSelectionFiltersValid()}
+                        variant="contained"
+                        color="primary"
+                        classes={{ root: classes.button }}
+                        onClick={() => setStepIndex(3)}
+                    >
+                        {t('Validate')}
+                    </Button>
                 </div>
-                <div className="clearfix" />
-                <div className={classes.filters}>
-                  {R.map((currentFilter) => {
-                    const label = `${truncate(
-                      t(`filter_${currentFilter[0]}`),
-                      20,
-                    )}`;
-                    const localFilterMode = currentFilter[0].endsWith('not_eq')
-                      ? t('AND')
-                      : t('OR');
-                    const values = (
-                      <span>
-                        {R.map(
-                          (n) => (
-                            <span key={n.value}>
-                              {n.value && n.value.length > 0
-                                ? truncate(n.value, 15)
-                                : t('No label')}{' '}
-                              {R.last(currentFilter[1]).value !== n.value && (
-                                <code>{localFilterMode}</code>
-                              )}{' '}
-                            </span>
-                          ),
-                          currentFilter[1],
-                        )}
-                      </span>
-                    );
-                    return (
-                      <span key={currentFilter[0]}>
-                        <Chip
-                          classes={{ root: classes.filter }}
-                          label={
-                            <div>
-                              <strong>{label}</strong>: {values}
-                            </div>
-                          }
-                          onDelete={() => handleRemoveDataSelectionFilter(i, currentFilter[0])
-                          }
-                        />
-                        {R.last(R.toPairs(dataSelection[i].filters))[0]
-                          !== currentFilter[0] && (
-                          <Chip
-                            classes={{ root: classes.operator }}
-                            label={t('AND')}
-                          />
-                        )}
-                      </span>
-                    );
-                  }, R.toPairs(dataSelection[i].filters))}
-                  {R.map((currentFilter) => {
-                    const label = `${truncate(
-                      t(`filter_${currentFilter[0]}`),
-                      20,
-                    )}`;
-                    const localFilterMode = currentFilter[0].endsWith('not_eq')
-                      ? t('AND')
-                      : t('OR');
-                    const values = (
-                      <span>
-                        {R.map(
-                          (n) => (
-                            <span key={n.value}>
-                              {n.value && n.value.length > 0
-                                ? truncate(n.value, 15)
-                                : t('No label')}{' '}
-                              {R.last(currentFilter[1]).value !== n.value && (
-                                <code>{localFilterMode}</code>
-                              )}{' '}
-                            </span>
-                          ),
-                          currentFilter[1],
-                        )}
-                      </span>
-                    );
-                    return (
-                      <span key={currentFilter[0]}>
-                        <Chip
-                          color="warning"
-                          classes={{ root: classes.filter }}
-                          label={
-                            <div>
-                              <strong>{label}</strong>: {values}
-                            </div>
-                          }
-                          onDelete={() => handleRemoveDataSelectionDynamicFrom(
-                            i,
-                            currentFilter[0],
-                          )
-                          }
-                        />
-                        {R.last(R.toPairs(dataSelection[i].dynamicFrom))[0]
-                          !== currentFilter[0] && (
-                          <Chip
-                            classes={{ root: classes.operator }}
-                            label={t('AND')}
-                          />
-                        )}
-                      </span>
-                    );
-                  }, R.toPairs(dataSelection[i].dynamicFrom))}
-                  {R.map((currentFilter) => {
-                    const label = `${truncate(
-                      t(`filter_${currentFilter[0]}`),
-                      20,
-                    )}`;
-                    const localFilterMode = currentFilter[0].endsWith('not_eq')
-                      ? t('AND')
-                      : t('OR');
-                    const values = (
-                      <span>
-                        {R.map(
-                          (n) => (
-                            <span key={n.value}>
-                              {n.value && n.value.length > 0
-                                ? truncate(n.value, 15)
-                                : t('No label')}{' '}
-                              {R.last(currentFilter[1]).value !== n.value && (
-                                <code>{localFilterMode}</code>
-                              )}{' '}
-                            </span>
-                          ),
-                          currentFilter[1],
-                        )}
-                      </span>
-                    );
-                    return (
-                      <span key={currentFilter[0]}>
-                        <Chip
-                          color="success"
-                          classes={{ root: classes.filter }}
-                          label={
-                            <div>
-                              <strong>{label}</strong>: {values}
-                            </div>
-                          }
-                          onDelete={() => handleRemoveDataSelectionDynamicTo(
-                            i,
-                            currentFilter[0],
-                          )
-                          }
-                        />
-                        {R.last(R.toPairs(dataSelection[i].dynamicTo))[0]
-                          !== currentFilter[0] && (
-                          <Chip
-                            classes={{ root: classes.operator }}
-                            label={t('AND')}
-                          />
-                        )}
-                      </span>
-                    );
-                  }, R.toPairs(dataSelection[i].dynamicTo))}
-                </div>
-              </div>
-            );
-          })}
-        {perspective === 'entities' && (
-          <div className={classes.add}>
-            <Button
-              variant="contained"
-              disabled={getCurrentDataSelectionLimit() === dataSelection.length}
-              color="secondary"
-              size="small"
-              onClick={() => handleAddDataSelection('entities')}
-              classes={{ root: classes.buttonAdd }}
-            >
-              <AddOutlined fontSize="small" />
-            </Button>
-          </div>
-        )}
-        {perspective === 'relationships' && (
-          <div className={classes.add}>
-            <Button
-              style={{ marginRight: 20 }}
-              variant="contained"
-              disabled={getCurrentDataSelectionLimit() === dataSelection.length}
-              size="small"
-              onClick={() => handleAddDataSelection('relationships')}
-              classes={{ root: classes.buttonAdd }}
-            >
-              <AddOutlined fontSize="small" /> {t('Relationships')}
-            </Button>
-            <Button
-              variant="contained"
-              disabled={getCurrentDataSelectionLimit() === dataSelection.length}
-              color="secondary"
-              size="small"
-              onClick={() => handleAddDataSelection('entities')}
-              classes={{ root: classes.buttonAdd }}
-            >
-              <AddOutlined fontSize="small" /> {t('Entities')}
-            </Button>
-          </div>
-        )}
-        <div className={classes.buttons}>
-          <Button
-            disabled={!isDataSelectionFiltersValid()}
-            variant="contained"
-            color="primary"
-            classes={{ root: classes.button }}
-            onClick={() => setStepIndex(3)}
-          >
-            {t('Validate')}
-          </Button>
-        </div>
-      </div>
+            </div>
     );
   };
   const renderParameters = () => {
     return (
-      <div style={{ marginTop: 20 }}>
-        <TextField
-          variant="standard"
-          label={t('Title')}
-          fullWidth={true}
-          value={parameters.title}
-          onChange={(event) => handleChangeParameter('title', event.target.value)
-          }
-        />
-        {getCurrentCategory() === 'timeseries' && (
-          <FormControl
-            fullWidth={true}
-            variant="standard"
-            style={{ marginTop: 20 }}
-          >
-            <InputLabel id="relative">{t('Interval')}</InputLabel>
-            <Select
-              labelId="relative"
-              fullWidth={true}
-              value={parameters.interval ?? 'day'}
-              onChange={(event) => handleChangeParameter('interval', event.target.value)
-              }
-            >
-              <MenuItem value="day">{t('Day')}</MenuItem>
-              <MenuItem value="week">{t('Week')}</MenuItem>
-              <MenuItem value="month">{t('Month')}</MenuItem>
-              <MenuItem value="quarter">{t('Quarter')}</MenuItem>
-              <MenuItem value="year">{t('Year')}</MenuItem>
-            </Select>
-          </FormControl>
-        )}
-        <div>
-          {Array(dataSelection.length)
-            .fill(0)
-            .map((_, i) => {
-              return (
-                <div key={i} style={{ marginTop: 20 }}>
-                  <div style={{ display: 'flex', width: '100%' }}>
-                    <FormControl fullWidth={true} style={{ flex: 1 }}>
-                      <InputLabel id="relative" variant="standard" size="small">
-                        {isNotEmptyField(dataSelection[i].label)
-                          ? dataSelection[i].label
-                          : 'Unspecified'}
-                      </InputLabel>
-                      <Select
-                        variant="standard"
-                        labelId="relative"
-                        size="small"
+            <div style={{ marginTop: 20 }}>
+                <TextField
+                    variant="standard"
+                    label={t('Title')}
+                    fullWidth={true}
+                    value={parameters.title}
+                    onChange={(event) => handleChangeParameter('title', event.target.value)
+                    }
+                />
+                {getCurrentCategory() === 'timeseries' && (
+                    <FormControl
                         fullWidth={true}
-                        value={dataSelection[i].date_attribute ?? 'created_at'}
-                        onChange={(event) => handleChangeDataValidationParameter(
-                          i,
-                          'date_attribute',
-                          event.target.value,
-                        )
-                        }
-                      >
-                        <MenuItem value="created_at">
-                          created_at ({t('Technical date')})
-                        </MenuItem>
-                        <MenuItem value="updated_at">
-                          updated_at ({t('Technical date')})
-                        </MenuItem>
-                        <MenuItem value="created">
-                          created ({t('Functional date')})
-                        </MenuItem>
-                        <MenuItem value="modified">
-                          modified ({t('Functional date')})
-                        </MenuItem>
-                      </Select>
-                    </FormControl>
-                  </div>
-                  {getCurrentAvailableParameters().includes('attribute') && (
-                    <div
-                      style={{ display: 'flex', width: '100%', marginTop: 20 }}
+                        variant="standard"
+                        style={{ marginTop: 20 }}
                     >
-                      {dataSelection[i].perspective === 'relationships' && (
-                        <FormControl
-                          className={classes.formControl}
-                          fullWidth={true}
-                          style={{
-                            flex: 1,
-                            marginRight: 20,
-                          }}
-                        >
-                          <InputLabel variant="standard">
-                            {t('Attribute')}
-                          </InputLabel>
-                          <Select
+                        <InputLabel id="relative">{t('Interval')}</InputLabel>
+                        <Select
+                            labelId="relative"
                             fullWidth={true}
-                            variant="standard"
-                            value={dataSelection[i].attribute}
-                            onChange={(event) => handleChangeDataValidationParameter(
-                              i,
-                              'attribute',
-                              event.target.value,
-                            )
+                            value={parameters.interval ?? 'day'}
+                            onChange={(event) => handleChangeParameter('interval', event.target.value)
                             }
-                          >
-                            <MenuItem key="internal_id" value="internal_id">
-                              {t('Entity')}
-                            </MenuItem>
-                            <MenuItem key="entity_type" value="entity_type">
-                              {t('Entity type')}
-                            </MenuItem>
-                          </Select>
-                        </FormControl>
-                      )}
-                      {dataSelection[i].perspective === 'entities'
-                        && getCurrentSelectedEntityTypes(i).length > 0 && (
-                          <FormControl
-                            className={classes.formControl}
-                            fullWidth={true}
-                            style={{
-                              flex: 1,
-                            }}
-                          >
-                            <InputLabel variant="standard">
-                              {t('Attribute')}
-                            </InputLabel>
-                            <QueryRenderer
-                              query={stixCyberObservablesLinesAttributesQuery}
-                              variables={{
-                                elementType: getCurrentSelectedEntityTypes(i),
-                              }}
-                              render={({ props: resultProps }) => {
-                                if (
-                                  resultProps
-                                  && resultProps.schemaAttributes
-                                ) {
-                                  let attributes = R.pipe(
-                                    R.map((n) => n.node),
-                                    R.filter(
-                                      (n) => !R.includes(
-                                        n.value,
-                                        ignoredAttributesInDashboards,
-                                      ) && !n.value.startsWith('i_'),
-                                    ),
-                                  )(resultProps.schemaAttributes.edges);
-                                  if (
-                                    attributes.filter(
-                                      (n) => n.value === 'hashes',
-                                    ).length > 0
-                                  ) {
-                                    attributes = R.sortBy(
-                                      R.prop('value'),
-                                      [
-                                        ...attributes,
-                                        { value: 'hashes.MD5' },
-                                        { value: 'hashes.SHA-1' },
-                                        { value: 'hashes.SHA-256' },
-                                        { value: 'hashes.SHA-512' },
-                                      ].filter((n) => n.value !== 'hashes'),
-                                    );
-                                  }
-                                  return (
-                                    <Select
-                                      fullWidth={true}
-                                      variant="standard"
-                                      value={dataSelection[i].attribute}
-                                      onChange={(event) => handleChangeDataValidationParameter(
-                                        i,
-                                        'attribute',
-                                        event.target.value,
-                                      )
-                                      }
-                                    >
-                                      {[
-                                        ...attributes,
-                                        { value: 'created-by.internal_id' },
-                                        {
-                                          value: 'object-assignee.internal_id',
-                                        },
-                                        { value: 'object-marking.internal_id' },
-                                        {
-                                          value: 'kill-chain-phase.internal_id',
-                                        },
-                                      ].map((attribute) => (
-                                        <MenuItem
-                                          key={attribute.value}
-                                          value={attribute.value}
+                        >
+                            <MenuItem value="day">{t('Day')}</MenuItem>
+                            <MenuItem value="week">{t('Week')}</MenuItem>
+                            <MenuItem value="month">{t('Month')}</MenuItem>
+                            <MenuItem value="quarter">{t('Quarter')}</MenuItem>
+                            <MenuItem value="year">{t('Year')}</MenuItem>
+                        </Select>
+                    </FormControl>
+                )}
+                <div>
+                    {Array(dataSelection.length)
+                      .fill(0)
+                      .map((_, i) => {
+                        return (
+                                <div key={i} style={{ marginTop: 20 }}>
+                                    <div style={{ display: 'flex', width: '100%' }}>
+                                        <FormControl fullWidth={true} style={{ flex: 1 }}>
+                                            <InputLabel id="relative" variant="standard" size="small">
+                                                {isNotEmptyField(dataSelection[i].label)
+                                                  ? dataSelection[i].label
+                                                  : 'Unspecified'}
+                                            </InputLabel>
+                                            <Select
+                                                variant="standard"
+                                                labelId="relative"
+                                                size="small"
+                                                fullWidth={true}
+                                                value={dataSelection[i].date_attribute ?? 'created_at'}
+                                                onChange={(event) => handleChangeDataValidationParameter(
+                                                  i,
+                                                  'date_attribute',
+                                                  event.target.value,
+                                                )
+                                                }
+                                            >
+                                                <MenuItem value="created_at">
+                                                    created_at ({t('Technical date')})
+                                                </MenuItem>
+                                                <MenuItem value="updated_at">
+                                                    updated_at ({t('Technical date')})
+                                                </MenuItem>
+                                                <MenuItem value="created">
+                                                    created ({t('Functional date')})
+                                                </MenuItem>
+                                                <MenuItem value="modified">
+                                                    modified ({t('Functional date')})
+                                                </MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </div>
+                                    {getCurrentAvailableParameters().includes('attribute') && (
+                                        <div
+                                            style={{ display: 'flex', width: '100%', marginTop: 20 }}
                                         >
-                                          {t(
-                                            capitalizeFirstLetter(
-                                              attribute.value,
-                                            ),
-                                          )}
-                                        </MenuItem>
-                                      ))}
-                                    </Select>
-                                  );
-                                }
-                                return <div />;
-                              }}
-                            />
-                          </FormControl>
-                      )}
-                      {dataSelection[i].perspective === 'entities'
-                        && getCurrentSelectedEntityTypes(i).length === 0 && (
-                          <TextField
-                            style={{
-                              flex: 1,
-                              marginRight:
-                                dataSelection[i].perspective === 'relationships'
-                                  ? 20
-                                  : 0,
-                            }}
-                            variant="standard"
-                            label={t('Field')}
-                            fullWidth={true}
-                            value={dataSelection[i].attribute}
-                            placeholder={t('Series attribute')}
-                            onChange={(event) => handleChangeDataValidationParameter(
-                              i,
-                              'attribute',
-                              event.target.value,
-                            )
-                            }
-                          />
-                      )}
-                      {dataSelection[i].perspective === 'relationships' && (
-                        <FormControlLabel
-                          control={
-                            <Switch
-                              onChange={() => handleToggleDataValidationIsTo(i)}
-                              checked={!dataSelection[i].isTo}
-                            />
-                          }
-                          label={t('Display the source')}
-                        />
-                      )}
-                      {dataSelection[i].perspective === 'relationships' && (
-                        <Tooltip
-                          title={t(
-                            'Enable if the displayed data is the source of the relationships.',
-                          )}
-                        >
-                          <InformationOutline
-                            fontSize="small"
-                            color="primary"
-                            style={{ marginTop: 14 }}
-                          />
-                        </Tooltip>
-                      )}
-                    </div>
-                  )}
+                                            {dataSelection[i].perspective === 'relationships' && (
+                                                <FormControl
+                                                    className={classes.formControl}
+                                                    fullWidth={true}
+                                                    style={{
+                                                      flex: 1,
+                                                      marginRight: 20,
+                                                    }}
+                                                >
+                                                    <InputLabel variant="standard">
+                                                        {t('Attribute')}
+                                                    </InputLabel>
+                                                    <Select
+                                                        fullWidth={true}
+                                                        variant="standard"
+                                                        value={dataSelection[i].attribute}
+                                                        onChange={(event) => handleChangeDataValidationParameter(
+                                                          i,
+                                                          'attribute',
+                                                          event.target.value,
+                                                        )
+                                                        }
+                                                    >
+                                                        <MenuItem key="internal_id" value="internal_id">
+                                                            {t('Entity')}
+                                                        </MenuItem>
+                                                        <MenuItem key="entity_type" value="entity_type">
+                                                            {t('Entity type')}
+                                                        </MenuItem>
+                                                    </Select>
+                                                </FormControl>
+                                            )}
+                                            {dataSelection[i].perspective === 'entities'
+                                                && getCurrentSelectedEntityTypes(i).length > 0 && (
+                                                    <FormControl
+                                                        className={classes.formControl}
+                                                        fullWidth={true}
+                                                        style={{
+                                                          flex: 1,
+                                                        }}
+                                                    >
+                                                        <InputLabel variant="standard">
+                                                            {t('Attribute')}
+                                                        </InputLabel>
+                                                        <QueryRenderer
+                                                            query={stixCyberObservablesLinesAttributesQuery}
+                                                            variables={{
+                                                              elementType: getCurrentSelectedEntityTypes(i),
+                                                            }}
+                                                            render={({ props: resultProps }) => {
+                                                              if (
+                                                                resultProps
+                                                                    && resultProps.schemaAttributes
+                                                              ) {
+                                                                let attributes = R.pipe(
+                                                                  R.map((n) => n.node),
+                                                                  R.filter(
+                                                                    (n) => !R.includes(
+                                                                      n.value,
+                                                                      ignoredAttributesInDashboards,
+                                                                    ) && !n.value.startsWith('i_'),
+                                                                  ),
+                                                                )(resultProps.schemaAttributes.edges);
+                                                                if (
+                                                                  attributes.filter(
+                                                                    (n) => n.value === 'hashes',
+                                                                  ).length > 0
+                                                                ) {
+                                                                  attributes = R.sortBy(
+                                                                    R.prop('value'),
+                                                                    [
+                                                                      ...attributes,
+                                                                      { value: 'hashes.MD5' },
+                                                                      { value: 'hashes.SHA-1' },
+                                                                      { value: 'hashes.SHA-256' },
+                                                                      { value: 'hashes.SHA-512' },
+                                                                    ].filter((n) => n.value !== 'hashes'),
+                                                                  );
+                                                                }
+                                                                return (
+                                                                        <Select
+                                                                            fullWidth={true}
+                                                                            variant="standard"
+                                                                            value={dataSelection[i].attribute}
+                                                                            onChange={(event) => handleChangeDataValidationParameter(
+                                                                              i,
+                                                                              'attribute',
+                                                                              event.target.value,
+                                                                            )
+                                                                            }
+                                                                        >
+                                                                            {[
+                                                                              ...attributes,
+                                                                              { value: 'created-by.internal_id' },
+                                                                              {
+                                                                                value: 'object-assignee.internal_id',
+                                                                              },
+                                                                              { value: 'object-marking.internal_id' },
+                                                                              {
+                                                                                value: 'kill-chain-phase.internal_id',
+                                                                              },
+                                                                            ].map((attribute) => (
+                                                                                <MenuItem
+                                                                                    key={attribute.value}
+                                                                                    value={attribute.value}
+                                                                                >
+                                                                                    {t(
+                                                                                      capitalizeFirstLetter(
+                                                                                        attribute.value,
+                                                                                      ),
+                                                                                    )}
+                                                                                </MenuItem>
+                                                                            ))}
+                                                                        </Select>
+                                                                );
+                                                              }
+                                                              return <div/>;
+                                                            }}
+                                                        />
+                                                    </FormControl>
+                                            )}
+                                            {dataSelection[i].perspective === 'entities'
+                                                && getCurrentSelectedEntityTypes(i).length === 0 && (
+                                                    <TextField
+                                                        style={{
+                                                          flex: 1,
+                                                          marginRight:
+                                                                dataSelection[i].perspective === 'relationships'
+                                                                  ? 20
+                                                                  : 0,
+                                                        }}
+                                                        variant="standard"
+                                                        label={t('Field')}
+                                                        fullWidth={true}
+                                                        value={dataSelection[i].attribute}
+                                                        placeholder={t('Series attribute')}
+                                                        onChange={(event) => handleChangeDataValidationParameter(
+                                                          i,
+                                                          'attribute',
+                                                          event.target.value,
+                                                        )
+                                                        }
+                                                    />
+                                            )}
+                                            {dataSelection[i].perspective === 'relationships' && (
+                                                <FormControlLabel
+                                                    control={
+                                                        <Switch
+                                                            onChange={() => handleToggleDataValidationIsTo(i)}
+                                                            checked={!dataSelection[i].isTo}
+                                                        />
+                                                    }
+                                                    label={t('Display the source')}
+                                                />
+                                            )}
+                                            {dataSelection[i].perspective === 'relationships' && (
+                                                <Tooltip
+                                                    title={t(
+                                                      'Enable if the displayed data is the source of the relationships.',
+                                                    )}
+                                                >
+                                                    <InformationOutline
+                                                        fontSize="small"
+                                                        color="primary"
+                                                        style={{ marginTop: 14 }}
+                                                    />
+                                                </Tooltip>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                        );
+                      })}
                 </div>
-              );
-            })}
-        </div>
-        <div style={{ display: 'flex', width: '100%', marginTop: 20 }}>
-          {getCurrentAvailableParameters().includes('stacked') && (
-            <FormControlLabel
-              control={
-                <Switch
-                  onChange={() => handleToggleParameter('stacked')}
-                  checked={parameters.stacked}
-                />
-              }
-              label={t('Stacked')}
-            />
-          )}
-          {getCurrentAvailableParameters().includes('distributed') && (
-            <FormControlLabel
-              control={
-                <Switch
-                  onChange={() => handleToggleParameter('distributed')}
-                  checked={parameters.distributed}
-                />
-              }
-              label={t('Distributed')}
-            />
-          )}
-          {getCurrentAvailableParameters().includes('legend') && (
-            <FormControlLabel
-              control={
-                <Switch
-                  onChange={() => handleToggleParameter('legend')}
-                  checked={parameters.legend}
-                />
-              }
-              label={t('Display legend')}
-            />
-          )}
-        </div>
-      </div>
+                <div style={{ display: 'flex', width: '100%', marginTop: 20 }}>
+                    {getCurrentAvailableParameters().includes('stacked') && (
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    onChange={() => handleToggleParameter('stacked')}
+                                    checked={parameters.stacked}
+                                />
+                            }
+                            label={t('Stacked')}
+                        />
+                    )}
+                    {getCurrentAvailableParameters().includes('distributed') && (
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    onChange={() => handleToggleParameter('distributed')}
+                                    checked={parameters.distributed}
+                                />
+                            }
+                            label={t('Distributed')}
+                        />
+                    )}
+                    {getCurrentAvailableParameters().includes('legend') && (
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    onChange={() => handleToggleParameter('legend')}
+                                    checked={parameters.legend}
+                                />
+                            }
+                            label={t('Display legend')}
+                        />
+                    )}
+                </div>
+            </div>
     );
   };
   const getStepContent = () => {
@@ -1330,89 +1371,89 @@ const WidgetConfig = ({ widget, onComplete, closeMenu }) => {
     }
   };
   return (
-    <div>
-      {!widget && (
-        <Fab
-          onClick={() => setOpen(true)}
-          color="secondary"
-          aria-label="Add"
-          className={classes.createButton}
-        >
-          <Add />
-        </Fab>
-      )}
-      {widget && (
-        <MenuItem
-          onClick={() => {
-            closeMenu();
-            setOpen(true);
-          }}
-        >
-          {t('Update')}
-        </MenuItem>
-      )}
-      <Dialog
-        open={open}
-        PaperProps={{ elevation: 1 }}
-        TransitionComponent={Transition}
-        onClose={handleClose}
-        fullWidth={true}
-        maxWidth="md"
-        className="noDrag"
-      >
-        <DialogTitle>
-          <Stepper linear={false} activeStep={stepIndex}>
-            <Step>
-              <StepButton
-                onClick={() => setStepIndex(0)}
-                disabled={stepIndex === 0}
-              >
-                <StepLabel>{t('Visualization')}</StepLabel>
-              </StepButton>
-            </Step>
-            <Step>
-              <StepButton
-                onClick={() => setStepIndex(1)}
-                disabled={stepIndex <= 1}
-              >
-                <StepLabel>{t('Perspective')}</StepLabel>
-              </StepButton>
-            </Step>
-            <Step>
-              <StepButton
-                onClick={() => setStepIndex(2)}
-                disabled={stepIndex <= 2}
-              >
-                <StepLabel>{t('Filters')}</StepLabel>
-              </StepButton>
-            </Step>
-            <Step>
-              <StepButton
-                onClick={() => setStepIndex(3)}
-                disabled={stepIndex <= 3}
-              >
-                <StepLabel>{t('Parameters')}</StepLabel>
-              </StepButton>
-            </Step>
-          </Stepper>
-        </DialogTitle>
-        <DialogContent>{getStepContent()}</DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>{t('Cancel')}</Button>
-          <Button
-            color="secondary"
-            onClick={completeSetup}
-            disabled={
-              stepIndex !== 3
-              || (getCurrentAvailableParameters().includes('attribute')
-                && !isDataSelectionAttributesValid())
-            }
-          >
-            {widget ? t('Update') : t('Create')}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+        <div>
+            {!widget && (
+                <Fab
+                    onClick={() => setOpen(true)}
+                    color="secondary"
+                    aria-label="Add"
+                    className={classes.createButton}
+                >
+                    <Add/>
+                </Fab>
+            )}
+            {widget && (
+                <MenuItem
+                    onClick={() => {
+                      closeMenu();
+                      setOpen(true);
+                    }}
+                >
+                    {t('Update')}
+                </MenuItem>
+            )}
+            <Dialog
+                open={open}
+                PaperProps={{ elevation: 1 }}
+                TransitionComponent={Transition}
+                onClose={handleClose}
+                fullWidth={true}
+                maxWidth="md"
+                className="noDrag"
+            >
+                <DialogTitle>
+                    <Stepper linear={false} activeStep={stepIndex}>
+                        <Step>
+                            <StepButton
+                                onClick={() => setStepIndex(0)}
+                                disabled={stepIndex === 0}
+                            >
+                                <StepLabel>{t('Visualization')}</StepLabel>
+                            </StepButton>
+                        </Step>
+                        <Step>
+                            <StepButton
+                                onClick={() => setStepIndex(1)}
+                                disabled={stepIndex <= 1}
+                            >
+                                <StepLabel>{t('Perspective')}</StepLabel>
+                            </StepButton>
+                        </Step>
+                        <Step>
+                            <StepButton
+                                onClick={() => setStepIndex(2)}
+                                disabled={stepIndex <= 2}
+                            >
+                                <StepLabel>{t('Filters')}</StepLabel>
+                            </StepButton>
+                        </Step>
+                        <Step>
+                            <StepButton
+                                onClick={() => setStepIndex(3)}
+                                disabled={stepIndex <= 3}
+                            >
+                                <StepLabel>{t('Parameters')}</StepLabel>
+                            </StepButton>
+                        </Step>
+                    </Stepper>
+                </DialogTitle>
+                <DialogContent>{getStepContent()}</DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}>{t('Cancel')}</Button>
+                    <Button
+                        color="secondary"
+                        onClick={completeSetup}
+                        disabled={
+                            stepIndex !== 3
+                            || (getCurrentAvailableParameters().includes('attribute')
+                                && !isDataSelectionAttributesValid())
+                        }
+                    >
+                        {widget ? t('Update') : t('Create')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </div>
   );
 };
 

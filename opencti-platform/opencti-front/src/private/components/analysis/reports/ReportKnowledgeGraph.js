@@ -874,7 +874,12 @@ class ReportKnowledgeGraphComponent extends Component {
     });
   }
 
-  handleReNodeClick(nodes) {
+  /**
+   *
+   * @param nodes
+   * @param links type {}
+   */
+  handleReNodeClick({nodes, links}) {
     this.selectedNodes.clear();
     Object.values(nodes).forEach((n) => this.selectedNodes.add(n));
     this.setState({
@@ -1399,8 +1404,6 @@ class ReportKnowledgeGraphComponent extends Component {
       this.graphObjects,
     );
 
-    console.log(graphData);
-
     return (
             <div>
                 <ContainerHeader
@@ -1474,6 +1477,7 @@ class ReportKnowledgeGraphComponent extends Component {
                     />
                 )}
             <Regraph
+                selectedNodes={this.selectedNodes}
                 graphData={graphData}
                 handleReNodeClick={this.handleReNodeClick.bind(this)}
                 handleUpdateGraphData={this.handleUpdateGraphData.bind(this)}

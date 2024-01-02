@@ -8,12 +8,7 @@ import Rating, { IconContainerProps } from '@mui/material/Rating';
 import { styled } from '@mui/material/styles';
 import InputLabel from '@mui/material/InputLabel';
 
-type CustomIcon = {
-  [index: string]: {
-    icon: React.ReactElement;
-    label: string;
-  };
-};
+
 export const customIcons = (fontSize: number): CustomIcon => ({
   1: {
     icon: <SentimentVeryDissatisfiedIcon color="error" sx={{ fontSize }} />,
